@@ -65,9 +65,9 @@ jobs:
             sleep 3
           done
 
-      - name: Wait for DB
-        run: |
-          poetry run python manage.py wait_for_db
+#      - name: Wait for DB
+#        run: |
+#          poetry run python manage.py wait_for_db
 
       # 8. Django 마이그레이션 실행
       - name: Run Django Migration
