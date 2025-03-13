@@ -1,17 +1,29 @@
-[project]
+[tool.poetry]
 name = "bbang"
 version = "0.1.0"
 description = "BBang Project"
 authors = [
-    {name = "seonhongmun",email = "mshg_@naver.com"}
-]
-readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "django (>=5.1.7,<6.0.0)",
+    "seonhongmun <mshg_@naver.com>"        # 문자열 형태로 작성
 ]
 package-mode = false
 
+#[project]
+#name = "bbang"
+#version = "0.1.0"
+#description = "BBang Project"
+#authors = [
+#    {name = "seonhongmun",email = "mshg_@naver.com"}
+#]
+#readme = "README.md"
+#requires-python = ">=3.12"
+#dependencies = [
+#    "django (>=5.1.7,<6.0.0)",
+#]
+#package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+django = "5.1.7"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
