@@ -1,0 +1,83 @@
+[tool.poetry]
+name = "bbang"
+version = "0.1.0"
+description = "BBang Project"
+authors = [
+    "seonhongmun <mshg_@naver.com>"        # 문자열 형태로 작성
+]
+package-mode = false
+
+#[project]
+#name = "bbang"
+#version = "0.1.0"
+#description = "BBang Project"
+#authors = [
+#    {name = "seonhongmun",email = "mshg_@naver.com"}
+#]
+#readme = "README.md"
+#requires-python = ">=3.12"
+#dependencies = [
+#    "django (>=5.1.7,<6.0.0)",
+#]
+#package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+django = "5.1.7"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+isort = "^6.0.1"
+mypy = "^1.15.0"
+ipython = "^9.0.2"
+django-extensions = "^3.2.3"
+drf-yasg = "^1.21.10"
+djangorestframework-simplejwt = "^5.5.0"
+djangorestframework = "^3.15.2"
+psycopg2-binary = "^2.9.10"
+
+[tool.poetry.group.black.dependencies]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+python_version = "3.12"
+strict = true
+
+[[tool.mypy.overrides]]
+module = "*.migrations.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "manage"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "drf_yasg"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "rest_framework"
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.coverage.report]
+fail_under = 90
+
+[tool.coverage.run]
+omit = [
+    ".mypy_cache/**/*",
+    "*/migrations/*",
+    "*/*test*.py",
+]

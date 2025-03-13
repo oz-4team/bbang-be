@@ -1,0 +1,85 @@
+name: Code Quality Checks
+
+# 코드가 main 브랜치에 push되거나 PR 생성 시 CI 실행
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  ci:
+    # 최신 ubuntu 환경에서 실행
+    runs-on: ubuntu-latest
+
+    # PostgreSQL 서비스 설정
+    services:
+      db:
+        image: postgres:14
+        ports:
+          - 5432:5432
+        # Github Secrets에서 가져와 PostgreSQL 환경 변수 설정
+        env:
+          POSTGRES_USER: ${{ secrets.PG_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.PG_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.PG_NAME }}
+        # Postgres의 연결 상태 확인 (10초 간격, 최대 5번 시도)
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      # 1. 코드 체크아웃 (CI 환경에서 코드 다운로드)
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Python 설정 (3.12 버전 사용)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      # 3. Poetry 설치
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "${HOME}/.local/bin" >> $GITHUB_PATH
+      # 4. Poetry를 사용하여 의존성 패키지 설치
+      - name: Install Packages & Libraries
+        run:
+          poetry install
+
+      # 5. isort 실행 (import 순서 체크)
+      - name: Run isort (Import sorting)
+        run: |
+          poetry run isort . --check --diff
+      # 6. black 실행 (PEP8 코드 스타일 체크)
+      - name: Run black (Code formatting)
+        run: |
+          poetry run black . --check
+      # 7. PostgreSQL 연결 테스트 (DB가 준비될 때까지 대기)
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U ${{ secrets.PG_USER }}; do
+            sleep 3
+          done
+
+#      - name: Wait for DB
+#        run: |
+#          poetry run python manage.py wait_for_db
+
+      # 8. Django 마이그레이션 실행
+      - name: Run Django Migration
+        run: |
+          poetry run python manage.py makemigrations
+          poetry run python manage.py migrate
+
+      - name: Run Django tests
+        run: |
+          poetry run python manage.py test
+
+      # 9. Django 테스트 실행 (도전 미션)
+      - name: Test python project
+        run: |
+          poetry run python manage.py test
