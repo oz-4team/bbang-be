@@ -10,7 +10,9 @@ requires-python = ">=3.12"
 dependencies = [
     "django (>=5.1.7,<6.0.0)",
 ]
-
+packages = [
+    { include = "bbang" }
+]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
