@@ -1,6 +1,7 @@
 from django.db import models
 
 from app.artists.models import Artist, ArtistGroup
+from app.accounts.models import User
 from app.common.models import BaseModel
 
 # Create your models here.
@@ -37,7 +38,7 @@ class Schedule(BaseModel):
     end_date = models.DateTimeField("종료 날짜")
     location = models.CharField("장소", max_length=100, null=True, blank=True)
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
-    user = models.ForeignKey("app.User", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     map = models.ForeignKey(Map, on_delete=models.SET_NULL, null=True, blank=True)
     artist_group = models.ForeignKey(ArtistGroup, on_delete=models.CASCADE)
     image = models.ForeignKey(ScheduleImage, on_delete=models.SET_NULL, null=True, blank=True)
