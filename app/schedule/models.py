@@ -1,7 +1,7 @@
 from django.db import models
 
-from app.artists.models import Artist, ArtistGroup
 from app.accounts.models import User
+from app.artists.models import Artist, ArtistGroup
 from app.common.models import BaseModel
 
 # Create your models here.
