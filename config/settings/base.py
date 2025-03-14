@@ -41,10 +41,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_yasg",
-    'app.accounts',
-    'app.artists',
-    'app.common',
-    'app.schedule',
+    "app.accounts",
+    "app.artists",
+    "app.common",
+    "app.schedule",
 ]
 
 MIDDLEWARE = [
