@@ -22,12 +22,10 @@ class UserImage(BaseModel):
         return f"{self.image_name or '기본 이미지'}"  # 이미지 이름이 없으면 기본 이미지
 
 
-# 커스텀 유저 매니저: 커스텀 유저 생성 및 슈퍼유저 생성을 위한 메서드를 정의
+# 커스텀 유저 매니저
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
-        """
-        이메일을 기반으로 일반 유저를 생성하는 메서드입니다.
-        """
+
         if not email:
             raise ValueError("이메일은 필수입니다.")
         email = self.normalize_email(email)
