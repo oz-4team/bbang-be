@@ -4,6 +4,7 @@ from app.common.models import BaseModel
 
 # Create your models here.
 
+
 class ArtistGroup(BaseModel):
     artist_group = models.CharField("아티스트 그룹", max_length=30)
     artist_agency = models.CharField("소속사", max_length=30)
@@ -24,6 +25,7 @@ class Artist(BaseModel):
     artist_agency = models.CharField("소속사", max_length=30)
     artist_insta = models.CharField("인스타그램", max_length=30, null=True, blank=True)
     image = models.ForeignKey(ArtistImage, on_delete=models.SET_NULL, null=True, blank=True)
+
     class Meta:
         verbose_name = "아티스트"
         verbose_name_plural = "아티스트 목록"
