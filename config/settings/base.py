@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "app.artists",
     "app.common",
     "app.schedule",
+    "app.content",
 ]
 
 MIDDLEWARE = [
