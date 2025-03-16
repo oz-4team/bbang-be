@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+
 from app.accounts.models import User
 from app.artists.models import Artist, ArtistGroup
 from app.common.models import BaseModel
@@ -27,68 +28,45 @@ class Advertisement(BaseModel):
 
 # 좋아요 테이블
 class Likes(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, db_column="user_id", verbose_name="사용자")
-    # 좋아요 대상이 될 수 있는 아티스트 (optional)
-    artist = models.ForeignKey(
-        Artist, on_delete=models.CASCADE, db_column="artist_id", verbose_name="아티스트", null=True, blank=True
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="사용자",
+        db_column="user_id",
     )
-    # 좋아요 대상이 될 수 있는 아티스트 그룹 (optional)
+    # 아티스트
+    artist = models.ForeignKey(
+        Artist,
+        on_delete=models.CASCADE,
+        db_column="artist_id",
+        verbose_name="아티스트",
+        null=True,
+        blank=True,
+    )
+    # 아티스트 그룹
     artist_group = models.ForeignKey(
         ArtistGroup,
         on_delete=models.CASCADE,
-        db_column="artist_groups_id",
+        db_column="artist_group_id",
         verbose_name="아티스트 그룹",
         null=True,
         blank=True,
     )
 
-    def clean(self):
-        """
-        좋아요는 아티스트 OR 아티스트 그룹 중 정확히 하나가 지정되어야 합니다.
-        """
-        if (self.artist is None and self.artist_group is None) or (
-            self.artist is not None and self.artist_group is not None
-        ):
-            raise ValidationError("좋아요는 아티스트 또는 아티스트 그룹 중 하나만 지정할 수 있습니다.")
-
     class Meta:
         db_table = "likes"
         verbose_name = "좋아요"
         verbose_name_plural = "좋아요 목록"
-        constraints = [
-            # 각 사용자-아티스트 조합은 유일해야 합니다.
-            models.UniqueConstraint(
-                fields=["user", "artist"], condition=models.Q(artist__isnull=False), name="unique_user_artist_like"
-            ),
-            # 각 사용자-아티스트그룹 조합은 유일해야 합니다.
-            models.UniqueConstraint(
-                fields=["user", "artist_group"],
-                condition=models.Q(artist_group__isnull=False),
-                name="unique_user_artistgroup_like",
-            ),
-        ]
-
-    def __str__(self):
-        if self.artist:
-            target = f"아티스트: {self.artist}"
-        else:
-            target = f"아티스트 그룹: {self.artist_group}"
-        return f"{self.user} - {target}"
 
     def clean(self):
-        """
-        아티스트와 아티스트 그룹 중 적어도 하나는 반드시 선택되어야 합니다.
-        """
-        from django.core.exceptions import ValidationError
-
         if not self.artist and not self.artist_group:
-            raise ValidationError("좋아요는 아티스트 또는 아티스트 그룹 중 하나를 선택해야 합니다.")
+            raise ValidationError("아티스트 또는 아티스트 그룹 중 하나는 반드시 필요합니다.")
+        # 하나의 아티스트나 아티스트 그룹은 좋아요해야하고 둘다 좋아요도 가능함
 
     def __str__(self):
-        # __str__은 선택된 값에 따라 표시합니다.
-        artist_info = self.artist.__str__() if self.artist else "No Artist"
-        group_info = self.artist_group.__str__() if self.artist_group else "No Group"
-        return f"{self.user} - {artist_info} - {group_info}"
+        artist_str = str(self.artist) if self.artist else "No Artist"
+        group_str = str(self.artist_group) if self.artist_group else "No Group"
+        return f"{self.user} - {artist_str} - {group_str}"
 
 
 # 즐겨찾기 테이블

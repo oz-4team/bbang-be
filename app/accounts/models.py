@@ -72,7 +72,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):  # BaseModel => creat
         verbose_name="유저 이미지",
         db_column="user_image_key",
         null=True,
-        blank=True
+        blank=True,
     )
 
     objects = CustomUserManager()  # 커스텀 매니저 지정
