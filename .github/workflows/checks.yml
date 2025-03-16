@@ -68,8 +68,20 @@ jobs:
 #      - name: Wait for DB
 #        run: |
 #          poetry run python manage.py wait_for_db
+      # 8. 데이터베이스 삭제
+      - name: Drop existing DB
+        run: |
+          PGPASSWORD=${{ secrets.PG_PASSWORD }} \
+          psql -h localhost -p 5432 -U ${{ secrets.PG_USER }} \
+            -c "DROP DATABASE IF EXISTS \"${{ secrets.PG_NAME }}\";"
 
-      # 8. Django 마이그레이션 실행
+      # 9. 데이터베이스 재생성
+      - name: Create DB
+        run: |
+          PGPASSWORD=${{ secrets.PG_PASSWORD }} \
+          psql -h localhost -p 5432 -U ${{ secrets.PG_USER }} -c "CREATE DATABASE \"${{ secrets.PG_NAME }}\";"
+
+      # 10. Django 마이그레이션 실행
       - name: Run Django Migration
         run: |
           poetry run python manage.py makemigrations
@@ -79,7 +91,7 @@ jobs:
         run: |
           poetry run python manage.py test
 
-      # 9. Django 테스트 실행 (도전 미션)
+      # 11. Django 테스트 실행
       - name: Test python project
         run: |
           poetry run python manage.py test

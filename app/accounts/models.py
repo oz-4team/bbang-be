@@ -68,11 +68,11 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):  # BaseModel => creat
     social_id = models.CharField("소셜 아이디", max_length=50, null=True)  # 소셜 로그인 식별자
     user_image = models.ForeignKey(
         UserImage,
-        on_delete=models.SET_DEFAULT,  # 참조된 이미지가 삭제되면 기본 이미지로 설정
-        default=1,  # 기본 이미지의 id 값
+        on_delete=models.SET_NULL,
         verbose_name="유저 이미지",
         db_column="user_image_key",
         null=True,
+        blank=True,
     )
 
     objects = CustomUserManager()  # 커스텀 매니저 지정

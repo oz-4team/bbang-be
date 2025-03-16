@@ -31,8 +31,8 @@ class ArtistGroupImage(BaseModel):
 
 
 class ArtistGroup(BaseModel):
-    artist_group = models.CharField("아티스트 그룹", max_length=30)
-    artist_agency = models.CharField("소속사", max_length=30)
+    artist_group = models.CharField("아티스트 그룹", max_length=30, null=True, blank=True)
+    artist_agency = models.CharField("소속사", max_length=30, null=True, blank=True)
     group_insta = models.CharField("인스타그램", max_length=30, null=True, blank=True)
     image = models.ForeignKey(ArtistGroupImage, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -45,9 +45,9 @@ class ArtistGroup(BaseModel):
 
 
 class Artist(BaseModel):
-    artist_name = models.CharField("이름", max_length=30)
-    artist_group = models.ForeignKey(ArtistGroup, on_delete=models.CASCADE)
-    artist_agency = models.CharField("소속사", max_length=30)
+    artist_name = models.CharField("이름", max_length=30, default="Unknown")
+    artist_group = models.ForeignKey(ArtistGroup, on_delete=models.CASCADE, null=True, blank=True)
+    artist_agency = models.CharField("소속사", max_length=30, null=True, blank=True)
     artist_insta = models.CharField("인스타그램", max_length=30, null=True, blank=True)
     image = models.ForeignKey(ArtistImage, on_delete=models.SET_NULL, null=True, blank=True)
 
