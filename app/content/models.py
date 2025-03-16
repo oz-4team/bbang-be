@@ -1,10 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-
 from app.accounts.models import User
-# from app.artists.models import Artist, ArtistGroup
+from app.artists.models import Artist, ArtistGroup
 from app.common.models import BaseModel
-# from app.schedule.models import Schedule
+from app.schedule.models import Schedule
 
 
 # 광고 테이블
