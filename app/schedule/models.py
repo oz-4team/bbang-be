@@ -33,7 +33,7 @@ class Map(BaseModel):
 
 class Schedule(BaseModel):
     is_active = models.BooleanField("활성화 상태", default=True)
-    title = models.CharField("제목", max_length=50)
+    title = models.CharField("제목", max_length=50, default="제목없음")
     description = models.TextField("설명", null=True, blank=True)
     start_date = models.DateTimeField("시작 날짜", default=timezone.now)
     end_date = models.DateTimeField("종료 날짜", default=timezone.now)
