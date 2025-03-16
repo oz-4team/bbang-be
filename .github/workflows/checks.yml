@@ -69,12 +69,16 @@ jobs:
 #        run: |
 #          poetry run python manage.py wait_for_db
       # 8. 데이터베이스 삭제
-      - name: Drop existing DB (if exists)
+      - name: Drop existing DB
         run: |
-          psql -h localhost -p 5432 -U ${{ secrets.PG_USER }} -c "DROP DATABASE IF EXISTS \"${{ secrets.PG_NAME }}\";"
+          PGPASSWORD=${{ secrets.PG_PASSWORD }} \
+          psql -h localhost -p 5432 -U ${{ secrets.PG_USER }} \
+            -c "DROP DATABASE IF EXISTS \"${{ secrets.PG_NAME }}\";"
+
       # 9. 데이터베이스 재생성
       - name: Create DB
         run: |
+          PGPASSWORD=${{ secrets.PG_PASSWORD }} \
           psql -h localhost -p 5432 -U ${{ secrets.PG_USER }} -c "CREATE DATABASE \"${{ secrets.PG_NAME }}\";"
 
       # 10. Django 마이그레이션 실행
