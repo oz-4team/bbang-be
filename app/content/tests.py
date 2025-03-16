@@ -29,16 +29,11 @@ class LikesModelTests(TestCase):
     def setUp(self):
         # UserImage 생성
         self.user_image = UserImage.objects.create(
-            image_name="TestUserImage",
-            image_url="http://example.com/user.jpg",
-            image_type="jpg"
+            image_name="TestUserImage", image_url="http://example.com/user.jpg", image_type="jpg"
         )
         # User 생성
         self.user = User.objects.create_user(
-            email="user@example.com",
-            password="testpass",
-            nickname="User1",
-            user_image=self.user_image
+            email="user@example.com", password="testpass", nickname="User1", user_image=self.user_image
         )
         # ArtistGroup 생성
         self.artist_group = ArtistGroup.objects.create(
@@ -89,7 +84,9 @@ class LikesModelTests(TestCase):
         self.assertEqual(str(like), expected_str)
 
     def test_likes_with_no_fields(self):
-        like = Likes(user=self.user, artist=None, artist_group=None)   # 아티스트와 아티스트 그룹 모두 지정 안했을시 에러 테스트
+        like = Likes(
+            user=self.user, artist=None, artist_group=None
+        )  # 아티스트와 아티스트 그룹 모두 지정 안했을시 에러 테스트
         with self.assertRaises(ValidationError):
             like.full_clean()
 
@@ -198,6 +195,8 @@ class NotificationsModelTests(TestCase):
         self.favorite = Favorites.objects.create(user=self.user, schedule=self.schedule)
 
     def test_notifications_str(self):
-        notif = Notifications.objects.create(is_active=True, likes=self.like, favorites=self.favorite) # 알림 생성
+        notif = Notifications.objects.create(is_active=True, likes=self.like, favorites=self.favorite)  # 알림 생성
         expected_str = f"True - {self.like} - {self.favorite}"  # 형식 만들기
-        self.assertEqual(str(notif), expected_str)  # 알림의 메서드가 알림활성여부 - 좋아요 - 즐겨찾기 형식으로 반환되는지 테스트
+        self.assertEqual(
+            str(notif), expected_str
+        )  # 알림의 메서드가 알림활성여부 - 좋아요 - 즐겨찾기 형식으로 반환되는지 테스트
