@@ -33,13 +33,13 @@ class Map(BaseModel):
 
 class Schedule(BaseModel):
     is_active = models.BooleanField("활성화 상태", default=True)
-    title = models.CharField("제목", max_length=50)
+    title = models.CharField("제목", max_length=50, default="임시제목")
     description = models.TextField("설명", null=True, blank=True)
     start_date = models.DateTimeField("시작 날짜", default=timezone.now)
     end_date = models.DateTimeField("종료 날짜", default=timezone.now)
     location = models.CharField("장소", max_length=100, null=True, blank=True)
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     map = models.ForeignKey(Map, on_delete=models.SET_NULL, null=True, blank=True)
     artist_group = models.ForeignKey(ArtistGroup, on_delete=models.CASCADE, null=True, blank=True)
     image = models.ForeignKey(ScheduleImage, on_delete=models.SET_NULL, null=True, blank=True)
