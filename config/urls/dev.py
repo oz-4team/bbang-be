@@ -7,7 +7,7 @@ from .base import urlpatterns
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Finance Manager API",
+        title="IDOLSYNC API",
         default_version="v1",
         description="API 문서입니다.",
     ),
