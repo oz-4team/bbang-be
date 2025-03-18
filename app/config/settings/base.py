@@ -203,7 +203,7 @@ MEDIA_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbang")}.s3.ama
 # STORAGES 작성
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
         "OPTIONS": {
             "access_key": os.environ.get("S3_ACCESS_KEY", ""),
             "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY", ""),
@@ -214,7 +214,7 @@ STORAGES = {
         },
     },
     "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
         "OPTIONS": {
             "access_key": os.environ.get("S3_ACCESS_KEY", ""),
             "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY", ""),
