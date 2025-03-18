@@ -96,7 +96,7 @@ DATABASES = {
         "NAME": os.environ.get("PG_NAME"),
         "USER": os.environ.get("PG_USER"),
         "PASSWORD": os.environ.get("PG_PASSWORD"),
-        "HOST": os.environ.get("PG_HOST", "127.0.0.1"),
+        "HOST": os.environ.get("PG_HOST"),
         "PORT": 5432,
     }
 }
