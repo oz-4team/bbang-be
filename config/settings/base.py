@@ -14,19 +14,16 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -159,6 +156,9 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
     "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더에 사용할 토큰 타입 지정
 }
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
 # 이메일 백엔드 (개발 콘솔용) *수정 필요
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # SMTP 백엔드 사용
@@ -191,4 +191,3 @@ SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-]
