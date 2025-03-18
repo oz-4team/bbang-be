@@ -62,7 +62,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):  # BaseModel => creat
     nickname = models.CharField("닉네임", max_length=30, null=True)  # 닉네임
     is_active = models.BooleanField("활성 상태", default=False)  # 회원가입 후 이메일 인증 시 True로 업데이트됨
     is_staff = models.BooleanField("스태프 여부", default=False)  # 일반 유저는 False, 아티스트 스태프는 True
-    gender = models.CharField("성별", max_length=1, null=True)  # 성별 (예: 'M', 'F')
+    gender = models.CharField("성별", max_length=10, null=True)  # 성별 (예: 'M', 'F')
     age = models.IntegerField("나이", null=True)  # 나이
     social_provider = models.CharField("소셜 제공자", max_length=20, null=True)  # 소셜 로그인 제공자
     social_id = models.CharField("소셜 아이디", max_length=50, null=True)  # 소셜 로그인 식별자
