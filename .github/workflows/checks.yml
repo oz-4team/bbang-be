@@ -8,28 +8,28 @@ on:
   pull_request:
 
 env:
-  SECRET_KEY = ${{ secrets.SECRET_KEY }}
-  EMAIL_HOST = ${{ secrets.EMAIL_HOST }} # 네이버 SMTP 서버
-  EMAIL_PORT = ${{ secrets. EMAIL_PORT }}
-  EMAIL_USE_SSL = ${{ secrets.EMAIL_USE_SSL }}
-  EMAIL_HOST_USER = ${{ secrets.EMAIL_HOST_USER }}
-  EMAIL_HOST_PASSWORD = ${{ secrets.EMAIL_HOST_PASSWORD }}
-  DEFAULT_FROM_EMAIL = ${{ secrets.DEFAULT_FROM_EMAIL }}
-  SITE_URL = ${{ secrets.SITE_URL }}  # 나중에 도메인으로 변경
-  
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  EMAIL_HOST: ${{ secrets.EMAIL_HOST }} # 네이버 SMTP 서버
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_USE_SSL: ${{ secrets.EMAIL_USE_SSL }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+  DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
+  SITE_URL: ${{ secrets.SITE_URL }}  # 나중에 도메인으로 변경
+
   # 구글 OAuth2 관련 설정
-  GOOGLE_CLIENT_ID = ${{ secrets.GOOGLE_CLIENT_ID }}
-  GOOGLE_CLIENT_SECRET = ${{ secrets.GOOGLE_CLIENT_SECRET }}
-  GOOGLE_REDIRECT_URI = ${{ secrets.GOOGLE_REDIRECT_URI }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
 
   # 카카오 OAuth2 관련 설정
-  KAKAO_CLIENT_ID = ${{ secrets.KAKAO_CLIENT_ID }}
-  KAKAO_REDIRECT_URI = ${{ secrets.KAKAO_REDIRECT_URI }}
+  KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+  KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
 
   # 네이버 OAuth2 관련 설정
-  NAVER_CLIENT_ID = ${{ secrets.NAVER_CLIENT_ID }}
-  NAVER_CLIENT_SECRET = ${{ secrets.NAVER_CLIENT_SECRET }}
-  NAVER_REDIRECT_URI = ${{ secrets.NAVER_REDIRECT_URI }}
+  NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+  NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+  NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
 
 
 jobs:
