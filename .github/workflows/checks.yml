@@ -83,11 +83,15 @@ jobs:
 
       # 10. Django 마이그레이션 실행
       - name: Run Django Migration
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           poetry run python manage.py makemigrations
           poetry run python manage.py migrate
 
       - name: Run Django tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           poetry run python manage.py test
 
