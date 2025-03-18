@@ -4,7 +4,9 @@ import os
 import sys
 
 from dotenv import load_dotenv
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 
 def main():
     load_dotenv("/etc/environment")
