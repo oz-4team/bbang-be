@@ -64,8 +64,6 @@ jobs:
       # 1. 코드 체크아웃 (CI 환경에서 코드 다운로드)
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          submodules: true
 
       # 2. Python 설정 (3.12 버전 사용)
       - name: Set up Python
@@ -123,19 +121,13 @@ jobs:
           PGPASSWORD=${{ secrets.PG_PASSWORD }} \
           psql -h localhost -p 5432 -U ${{ secrets.PG_USER }} -c "CREATE DATABASE \"${{ secrets.PG_NAME }}\";"
 
-      # 10. 데이터베이스 재생성
-      - name: Set PYTHONPATH
-        run: |
-          echo "PYTHONPATH=${PYTHONPATH}:$(pwd)/bbang/app" >> $GITHUB_ENV
-
-      # 11. Django 마이그레이션 실행
+      # 10. Django 마이그레이션 실행
       - name: Run Django Migration
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          cd bbang/app
-          poetry run python manage.py makemigrations
-          poetry run python manage.py migrate
+          poetry run python app/manage.py makemigrations
+          poetry run python app/manage.py migrate
 
       - name: Run Django tests
         env:
@@ -143,7 +135,7 @@ jobs:
         run: |
           poetry run python manage.py test
 
-      # 12. Django 테스트 실행
+      # 11. Django 테스트 실행
       - name: Test python project
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
