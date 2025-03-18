@@ -159,8 +159,8 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # SMTP 백엔드 사용
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_PORT = os.environ.get("EMAIL_HOST")
-EMAIL_USE_SSL = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL")
 # os.environ.get -> 환경변수에서 값을 우선 가져온 후 없으면 뒤에 있는 값
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # 네이버 아이디@naver.com
 EMAIL_HOST_PASSWORD = os.environ.get(
