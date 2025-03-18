@@ -9,10 +9,12 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-from dotenv import load_dotenv
+
 import os
 from datetime import timedelta
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -23,7 +25,7 @@ load_dotenv()
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,11 +93,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get('DATABASE_NAME'),
-        "USER": os.environ.get('DATABASE_USER'),
-        "PASSWORD": os.environ.get('DATABASE_PASSWORD'),
-        "HOST": os.environ.get('DATABASE_HOST'),
-        "PORT": os.environ.get('DATABASE_POAT'),
+        "NAME": os.environ.get("DATABASE_NAME"),
+        "USER": os.environ.get("DATABASE_USER"),
+        "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
+        "HOST": os.environ.get("DATABASE_HOST"),
+        "PORT": os.environ.get("DATABASE_POAT"),
     }
 }
 
@@ -160,12 +162,14 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
 # 이메일 백엔드 (개발 콘솔용) *수정 필요
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # SMTP 백엔드 사용
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_HOST')
-EMAIL_USE_SSL = os.environ.get('EMAIL_HOST')
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_HOST")
+EMAIL_USE_SSL = os.environ.get("EMAIL_HOST")
 # os.environ.get -> 환경변수에서 값을 우선 가져온 후 없으면 뒤에 있는 값
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # 네이버 아이디@naver.com
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")  # 네이버 비밀번호  -> 깃허브 시크릿 EMAIL_HOST_PASSWORD / 비밀번호 세팅
+EMAIL_HOST_PASSWORD = os.environ.get(
+    "EMAIL_HOST_PASSWORD"
+)  # 네이버 비밀번호  -> 깃허브 시크릿 EMAIL_HOST_PASSWORD / 비밀번호 세팅
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")  # 기본 발신자 이메일 주소
 SITE_URL = os.environ.get("SITE_URL")  # 나중에 도메인으로 변경
 
