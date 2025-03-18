@@ -77,6 +77,46 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
+name = "boto3"
+version = "1.37.14"
+description = "The AWS SDK for Python"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "boto3-1.37.14-py3-none-any.whl", hash = "sha256:56b4d1e084dbca43d5fdd070f633a84de61a6ce592655b4d239d263d1a0097fc"},
+    {file = "boto3-1.37.14.tar.gz", hash = "sha256:cf2e5e6d56efd5850db8ce3d9094132e4759cf2d4b5fd8200d69456bf61a20f3"},
+]
+
+[package.dependencies]
+botocore = ">=1.37.14,<1.38.0"
+jmespath = ">=0.7.1,<2.0.0"
+s3transfer = ">=0.11.0,<0.12.0"
+
+[package.extras]
+crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
+
+[[package]]
+name = "botocore"
+version = "1.37.14"
+description = "Low-level, data-driven core of boto 3."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "botocore-1.37.14-py3-none-any.whl", hash = "sha256:709a1796f436f8e378e52170e58501c1f3b5f2d1308238cf1d6a3bdba2e32851"},
+    {file = "botocore-1.37.14.tar.gz", hash = "sha256:b0adce3f0fb42b914eb05079f50cf368cb9cf9745fdd206bd91fe6ac67b29aca"},
+]
+
+[package.dependencies]
+jmespath = ">=0.7.1,<2.0.0"
+python-dateutil = ">=2.1,<3.0.0"
+urllib3 = {version = ">=1.25.4,<2.2.0 || >2.2.0,<3", markers = "python_version >= \"3.10\""}
+
+[package.extras]
+crt = ["awscrt (==0.23.8)"]
+
+[[package]]
 name = "certifi"
 version = "2025.1.31"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -189,46 +229,6 @@ files = [
     {file = "charset_normalizer-3.4.1-py3-none-any.whl", hash = "sha256:d98b1668f06378c6dbefec3b92299716b931cd4e6061f3c875a71ced1780ab85"},
     {file = "charset_normalizer-3.4.1.tar.gz", hash = "sha256:44251f18cd68a75b56585dd00dae26183e102cd5e0f9f1466e6df5da2ed64ea3"},
 ]
-
-[[package]]
-name = "boto3"
-version = "1.37.13"
-description = "The AWS SDK for Python"
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "boto3-1.37.13-py3-none-any.whl", hash = "sha256:90fa5a91d7d7456219f0b7c4a93b38335dc5cf4613d885da4d4c1d099e04c6b7"},
-    {file = "boto3-1.37.13.tar.gz", hash = "sha256:295648f887464ab74c5c301a44982df76f9ba39ebfc16be5b8f071ad1a81fe95"},
-]
-
-[package.dependencies]
-botocore = ">=1.37.13,<1.38.0"
-jmespath = ">=0.7.1,<2.0.0"
-s3transfer = ">=0.11.0,<0.12.0"
-
-[package.extras]
-crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
-
-[[package]]
-name = "botocore"
-version = "1.37.13"
-description = "Low-level, data-driven core of boto 3."
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "botocore-1.37.13-py3-none-any.whl", hash = "sha256:aa417bac0f4d79533080e6e17c0509e149353aec83cfe7879597a7942f7f08d0"},
-    {file = "botocore-1.37.13.tar.gz", hash = "sha256:60dfb831c54eb466db9b91891a6c8a0c223626caa049969d5d42858ad1e7f8c7"},
-]
-
-[package.dependencies]
-jmespath = ">=0.7.1,<2.0.0"
-python-dateutil = ">=2.1,<3.0.0"
-urllib3 = {version = ">=1.25.4,<2.2.0 || >2.2.0,<3", markers = "python_version >= \"3.10\""}
-
-[package.extras]
-crt = ["awscrt (==0.23.8)"]
 
 [[package]]
 name = "click"
@@ -384,7 +384,7 @@ files = [
 ]
 
 [package.extras]
-tests = ["asttokens (>=2.1.0)", "coverage", "coverage-enable-subprocess", "ipython", "littleutils", "pytest", "rich"]
+tests = ["asttokens (>=2.1.0)", "coverage", "coverage-enable-subprocess", "ipython", "littleutils", "pytest", "rich ; python_version >= \"3.11\""]
 
 [[package]]
 name = "idna"
@@ -508,6 +508,18 @@ parso = ">=0.8.4,<0.9.0"
 docs = ["Jinja2 (==2.11.3)", "MarkupSafe (==1.1.1)", "Pygments (==2.8.1)", "alabaster (==0.7.12)", "babel (==2.9.1)", "chardet (==4.0.0)", "commonmark (==0.8.1)", "docutils (==0.17.1)", "future (==0.18.2)", "idna (==2.10)", "imagesize (==1.2.0)", "mock (==1.0.1)", "packaging (==20.9)", "pyparsing (==2.4.7)", "pytz (==2021.1)", "readthedocs-sphinx-ext (==2.1.4)", "recommonmark (==0.5.0)", "requests (==2.25.1)", "six (==1.15.0)", "snowballstemmer (==2.1.0)", "sphinx (==1.8.5)", "sphinx-rtd-theme (==0.4.3)", "sphinxcontrib-serializinghtml (==1.1.4)", "sphinxcontrib-websupport (==1.2.4)", "urllib3 (==1.26.4)"]
 qa = ["flake8 (==5.0.4)", "mypy (==0.971)", "types-setuptools (==67.2.0.1)"]
 testing = ["Django", "attrs", "colorama", "docopt", "pytest (<9.0.0)"]
+
+[[package]]
+name = "jmespath"
+version = "1.0.1"
+description = "JSON Matching Expressions"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980"},
+    {file = "jmespath-1.0.1.tar.gz", hash = "sha256:90261b206d6defd58fdd5e85f478bf633a2901798906be2ad389150c5c60edbe"},
+]
 
 [[package]]
 name = "matplotlib-inline"
@@ -854,6 +866,36 @@ pluggy = ">=1.5,<2"
 dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+description = "Extensions to the standard Python datetime module"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+groups = ["main"]
+files = [
+    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
+    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
+]
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
+name = "python-dotenv"
+version = "1.0.1"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+optional = false
+python-versions = ">=3.8"
+groups = ["dev"]
+files = [
+    {file = "python-dotenv-1.0.1.tar.gz", hash = "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca"},
+    {file = "python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"},
+]
+
+[package.extras]
+cli = ["click (>=5.0)"]
+
+[[package]]
 name = "pytz"
 version = "2025.1"
 description = "World timezone definitions, modern and historical"
@@ -1017,25 +1059,6 @@ pure-eval = "*"
 tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
-name = "urllib3"
-version = "2.3.0"
-description = "HTTP library with thread-safe connection pooling, file post, and more."
-optional = false
-python-versions = ">=3.9"
-groups = ["dev"]
-files = [
-    {file = "urllib3-2.3.0-py3-none-any.whl", hash = "sha256:1cee9ad369867bfdbbb48b7dd50374c0967a0bb7710050facf0dd6911440e3df"},
-    {file = "urllib3-2.3.0.tar.gz", hash = "sha256:f8c5449b3cf0861679ce7e0503c7b44b5ec981bec0d1d3795a07f1ba96f0204d"},
-]
-
-[package.extras]
-brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
-h2 = ["h2 (>=4,<5)"]
-socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
-zstd = ["zstandard (>=0.18.0)"]
-
-
-[[package]]
 name = "traitlets"
 version = "5.14.3"
 description = "Traitlets Python configuration system"
@@ -1089,6 +1112,24 @@ files = [
 ]
 
 [[package]]
+name = "urllib3"
+version = "2.3.0"
+description = "HTTP library with thread-safe connection pooling, file post, and more."
+optional = false
+python-versions = ">=3.9"
+groups = ["main", "dev"]
+files = [
+    {file = "urllib3-2.3.0-py3-none-any.whl", hash = "sha256:1cee9ad369867bfdbbb48b7dd50374c0967a0bb7710050facf0dd6911440e3df"},
+    {file = "urllib3-2.3.0.tar.gz", hash = "sha256:f8c5449b3cf0861679ce7e0503c7b44b5ec981bec0d1d3795a07f1ba96f0204d"},
+]
+
+[package.extras]
+brotli = ["brotli (>=1.0.9) ; platform_python_implementation == \"CPython\"", "brotlicffi (>=0.8.0) ; platform_python_implementation != \"CPython\""]
+h2 = ["h2 (>=4,<5)"]
+socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
+zstd = ["zstandard (>=0.18.0)"]
+
+[[package]]
 name = "wcwidth"
 version = "0.2.13"
 description = "Measures the displayed width of unicode strings in a terminal"
@@ -1103,4 +1144,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "801a481a4d6c96b812dd746481370138db5f1f6c15f07514232322e4488f579b"
+content-hash = "280a87429ce152c03ec371f51115da105b11a860c103f64c9140c658a03c1144"
