@@ -7,6 +7,36 @@ on:
       - main
   pull_request:
 
+env:
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  EMAIL_HOST: ${{ secrets.EMAIL_HOST }} # 네이버 SMTP 서버
+  EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+  EMAIL_USE_SSL: ${{ secrets.EMAIL_USE_SSL }}
+  EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+  EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+  DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
+  SITE_URL: ${{ secrets.SITE_URL }}  # 나중에 도메인으로 변경
+  DATABASE_NAME: ${{ secrets.PG_NAME }}
+  DATABASE_USER: ${{ secrets.PG_USER }}
+  DATABASE_PASSWORD: ${{ secrets.PG_PASSWORD }}
+  DATABASE_HOST: ${{ secrets.PG_HOST }}
+  DATABASE_PORT: ${{ secrets.PG_PORT }}
+
+  # 구글 OAuth2 관련 설정
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+
+  # 카카오 OAuth2 관련 설정
+  KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+  KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+
+  # 네이버 OAuth2 관련 설정
+  NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+  NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+  NAVER_REDIRECT_URI: ${{ secrets.NAVER_REDIRECT_URI }}
+
+
 jobs:
   ci:
     # 최신 ubuntu 환경에서 실행
@@ -23,6 +53,7 @@ jobs:
           POSTGRES_USER: ${{ secrets.PG_USER }}
           POSTGRES_PASSWORD: ${{ secrets.PG_PASSWORD }}
           POSTGRES_DB: ${{ secrets.PG_NAME }}
+
         # Postgres의 연결 상태 확인 (10초 간격, 최대 5번 시도)
         options: >-
           --health-cmd pg_isready
@@ -39,6 +70,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
+
+      - name: Set environment variables
+        run: |
+          echo "DATABASE_NAME=${{ secrets.PG_NAME }}" >> $GITHUB_ENV  # 데이터베이스 이름 설정
+          echo "DATABASE_USER=${{ secrets.PG_USER }}" >> $GITHUB_ENV   # 데이터베이스 사용자 설정
+          echo "DATABASE_PASSWORD=${{ secrets.PG_PASSWORD }}" >> $GITHUB_ENV  # 비밀번호 설정
+          echo "DATABASE_HOST=127.0.0.1" >> $GITHUB_ENV                 # 데이터베이스 호스트를 127.0.0.1로 설정
+          echo "DATABASE_PORT=5432" >> $GITHUB_ENV                      # 포트번호 설정
+          echo "DJANGO_SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV  # Django Secret Key 설정
 
       # 3. Poetry 설치
       - name: Install Poetry
@@ -65,21 +105,38 @@ jobs:
             sleep 3
           done
 
-#      - name: Wait for DB
-#        run: |
-#          poetry run python manage.py wait_for_db
+      # 8. 데이터베이스 삭제
+      - name: Drop existing DB
+        run: |
+          PGPASSWORD=${{ secrets.PG_PASSWORD }} \
+          psql -h localhost -p 5432 -U ${{ secrets.PG_USER }} \
+            -c "DROP DATABASE IF EXISTS \"${{ secrets.PG_NAME }}\";"
 
-      # 8. Django 마이그레이션 실행
+      # 9. 데이터베이스 재생성
+      - name: Create DB
+        run: |
+          PGPASSWORD=${{ secrets.PG_PASSWORD }} \
+          psql -h localhost -p 5432 -U ${{ secrets.PG_USER }} -c "CREATE DATABASE \"${{ secrets.PG_NAME }}\";"
+
+      # 10. Django 마이그레이션 실행
       - name: Run Django Migration
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           poetry run python manage.py makemigrations
           poetry run python manage.py migrate
 
       - name: Run Django tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           poetry run python manage.py test
 
-      # 9. Django 테스트 실행 (도전 미션)
+      # 11. Django 테스트 실행
       - name: Test python project
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           poetry run python manage.py test
+          
+          
