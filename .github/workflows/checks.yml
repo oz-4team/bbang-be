@@ -41,15 +41,14 @@ jobs:
         with:
           python-version: '3.12'
 
-      # 3. env 생성
       - name: Set environment variables
         run: |
-          echo "DB_NAME=${{ secrets.PG_NAME }}" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.PG_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.PG_PASSWORD }}" >> $GITHUB_ENV
-          echo "DB_HOST=localhost" >> $GITHUB_ENV
-          echo "DB_PORT=5432" >> $GITHUB_ENV
-          echo "DJANGO_SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "DATABASE_NAME=${{ secrets.PG_NAME }}" >> $GITHUB_ENV  # 데이터베이스 이름 설정
+          echo "DATABASE_USER=${{ secrets.PG_USER }}" >> $GITHUB_ENV   # 데이터베이스 사용자 설정
+          echo "DATABASE_PASSWORD=${{ secrets.PG_PASSWORD }}" >> $GITHUB_ENV  # 비밀번호 설정
+          echo "DATABASE_HOST=127.0.0.1" >> $GITHUB_ENV                 # 데이터베이스 호스트를 127.0.0.1로 설정
+          echo "DATABASE_PORT=5432" >> $GITHUB_ENV                      # 포트번호 설정
+          echo "DJANGO_SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV  # Django Secret Key 설정
 
       # 3. Poetry 설치
       - name: Install Poetry
