@@ -14,7 +14,6 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -156,9 +155,6 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
     "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더에 사용할 토큰 타입 지정
 }
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
 # 이메일 백엔드 (개발 콘솔용) *수정 필요
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # SMTP 백엔드 사용
@@ -191,3 +187,4 @@ SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
+]
