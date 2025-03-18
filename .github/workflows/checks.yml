@@ -133,13 +133,13 @@ jobs:
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          poetry run python manage.py test
+          poetry run python app/manage.py test
 
       # 11. Django 테스트 실행
       - name: Test python project
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          poetry run python manage.py test
+          poetry run python app/manage.py test
           
           
