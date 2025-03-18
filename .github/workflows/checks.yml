@@ -123,7 +123,7 @@ jobs:
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          cd Bang/app  # manage.py가 존재하는 디렉터리로 이동
+          cd bbang/app
           poetry run python manage.py makemigrations
           poetry run python manage.py migrate
 
