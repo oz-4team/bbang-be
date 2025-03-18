@@ -10,7 +10,7 @@ from app.common.models import BaseModel
 
 class ScheduleImage(BaseModel):
     image_name = models.CharField("이미지 이름", max_length=255, null=True, blank=True)
-    image_url = models.CharField("이미지 URL", max_length=255, null=True, blank=True)
+    image_url = models.URLField("이미지 URL", max_length=255, null=True, blank=True)
     image_type = models.CharField("이미지 타입", max_length=255, null=True, blank=True)
 
     class Meta:
@@ -38,9 +38,9 @@ class Schedule(BaseModel):
     start_date = models.DateTimeField("시작 날짜", default=timezone.now)
     end_date = models.DateTimeField("종료 날짜", default=timezone.now)
     location = models.CharField("장소", max_length=100, null=True, blank=True)
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     map = models.ForeignKey(Map, on_delete=models.SET_NULL, null=True, blank=True)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, null=True, blank=True)
     artist_group = models.ForeignKey(ArtistGroup, on_delete=models.CASCADE, null=True, blank=True)
     image = models.ForeignKey(ScheduleImage, on_delete=models.SET_NULL, null=True, blank=True)
 
