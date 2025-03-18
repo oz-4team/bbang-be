@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "app.schedule",
     "app.content",
     "app",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -91,14 +92,16 @@ WSGI_APPLICATION = "app.config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DATABASE_NAME"),
-        "USER": os.environ.get("DATABASE_USER"),
-        "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
-        "HOST": os.environ.get("DATABASE_HOST"),
-        "PORT": os.environ.get("DATABASE_PORT"),
+        "NAME": os.getenv("DATABASE_NAME"),
+        "USER": os.getenv("DATABASE_USER"),
+        "PASSWORD": os.getenv("DATABASE_PASSWORD"),
+        "HOST": os.getenv("DATABASE_HOST"),
+        "PORT": os.getenv("DATABASE_PORT"),
+        "OPTIONS": {
+            "sslmode": "require",  # SSL 적용 (RDS에서 필요할 수 있음)
+        },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -135,7 +138,7 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+# STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -190,3 +193,36 @@ SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
+
+
+# Static, Media URL 수정
+STATIC_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbang")}.s3.amazonaws.com/static/'
+MEDIA_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbang")}.s3.amazonaws.com/media/'
+
+
+# STORAGES 작성
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": os.environ.get("S3_ACCESS_KEY", ""),
+            "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY", ""),
+            "bucket_name": os.environ.get("S3_STORAGE_BUCKET_NAME", ""),
+            "region_name": os.environ.get("S3_REGION_NAME", ""),
+            "location": "media",
+            "default_acl": "public-read",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": os.environ.get("S3_ACCESS_KEY", ""),
+            "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY", ""),
+            "bucket_name": os.environ.get("S3_STORAGE_BUCKET_NAME", ""),
+            "region_name": os.environ.get("S3_REGION_NAME", ""),
+            "custom_domain": f'{os.environ.get("S3_STORAGE_BUCKET_NAME", "")}.s3.amazonaws.com',
+            "location": "static",
+            "default_acl": "public-read",
+        },
+    },
+}
