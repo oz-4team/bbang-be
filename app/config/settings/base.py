@@ -163,15 +163,12 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
 # 이메일 백엔드 (개발 콘솔용) *수정 필요
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # SMTP 백엔드 사용
-EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_PORT = os.environ.get("EMAIL_PORT")
-EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL")
-# os.environ.get -> 환경변수에서 값을 우선 가져온 후 없으면 뒤에 있는 값
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # 네이버 아이디@naver.com
-EMAIL_HOST_PASSWORD = os.environ.get(
-    "EMAIL_HOST_PASSWORD"
-)  # 네이버 비밀번호  -> 깃허브 시크릿 EMAIL_HOST_PASSWORD / 비밀번호 세팅
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")  # 기본 발신자 이메일 주소
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 465))
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True") == "True"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 SITE_URL = os.environ.get("SITE_URL")  # 나중에 도메인으로 변경
 
 # 구글 OAuth2 관련 설정
