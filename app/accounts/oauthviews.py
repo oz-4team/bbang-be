@@ -1,4 +1,5 @@
 import requests
+import userinfo
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest, JsonResponse
@@ -6,7 +7,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework.response import Response
 from app.accounts.models import UserImage
 
 # 현재 프로젝트에서 사용하는 User 모델 객체를 가져옴
@@ -30,8 +31,12 @@ class GoogleOAuthCallbackView(APIView):
             "redirect_uri": settings.GOOGLE_REDIRECT_URI,
             "grant_type": "authorization_code",
         }
-        token_response = requests.post(token_url, data=data).json()
-        access_token = token_response.get("access_token")
+        token_response = requests.post(token_url, data=data, headers={"content-type":"application/x-www-form-urlencoded"})
+        if token_response.status_code!=200:
+            error_text = token_response.text
+            return HttpResponseBadRequest(f"토큰요청실패: {error_text}")
+
+        access_token = token_response.json().get("access_token")
         if not access_token:
             return HttpResponseBadRequest("액세스 토큰을 발급받지 못했습니다.")
 
@@ -161,8 +166,11 @@ class NaverOAuthCallbackView(APIView):
     permission_classes = [AllowAny]
     parser_classes = [JSONParser]
 
+    def get(self, request):
+        return Response(data={"code":request.query_params.get("code"), "state":request.query_params.get("state")}, status=200)
+
     def post(self, request):
-        code = request.data.get("code")
+        code= request.data.get("code")
         state = request.data.get("state")
         if not code or not state:
             return HttpResponseBadRequest("인가 코드 또는 상태값이 전달되지 않았습니다.")
@@ -175,16 +183,21 @@ class NaverOAuthCallbackView(APIView):
             "code": code,
             "state": state,
         }
-        token_response = requests.post(token_url, data=data).json()
-        access_token = token_response.get("access_token")
+        token_response = requests.post(token_url, data=data)
+        if token_response.status_code!=200:
+            return HttpResponseBadRequest(f"{token_response.error_description}")
+
+        access_token = token_response.json().get("access_token")
         if not access_token:
             return HttpResponseBadRequest("액세스 토큰을 발급받지 못했습니다.")
 
         userinfo_response = requests.get(
             "https://openapi.naver.com/v1/nid/me", headers={"Authorization": f"Bearer {access_token}"}
-        ).json()
+        )
+        if userinfo_response.status_code!=200:
+            return HttpResponseBadRequest(f"{userinfo.error_description}")
 
-        response_data = userinfo_response.get("response", {})
+        response_data = userinfo_response.json().get("response", {})
         email = response_data.get("email")
         nickname = response_data.get("nickname")
         picture_url = response_data.get("profile_image")
