@@ -97,9 +97,9 @@ DATABASES = {
         "PASSWORD": os.getenv("DATABASE_PASSWORD"),
         "HOST": os.getenv("DATABASE_HOST"),
         "PORT": os.getenv("DATABASE_PORT"),
-        "OPTIONS": {
-            "sslmode": "require",  # SSL 적용 (RDS에서 필요할 수 있음)
-        },
+        # "OPTIONS": {
+        #     "sslmode": "require",  # SSL 적용 (RDS에서 필요할 수 있음)
+        # },
     }
 }
 
