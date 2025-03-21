@@ -23,3 +23,4 @@ class ArtistSerializer(serializers.ModelSerializer):
         model = Artist
         fields = "__all__"
 
+

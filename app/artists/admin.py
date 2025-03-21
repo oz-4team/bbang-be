@@ -14,3 +14,4 @@ class ArtistAdmin(admin.ModelAdmin):
 
 admin.site.register(ArtistGroup, ArtistGroupAdmin)
 admin.site.register(Artist, ArtistAdmin)
+

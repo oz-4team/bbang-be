@@ -15,3 +15,4 @@ urlpatterns = [
     path("artists/", ArtistView.as_view(), name="artist-list"),
     path("artists/<int:artist_id>/", ArtistDetailView.as_view(), name="artist-detail"),
 ]
+

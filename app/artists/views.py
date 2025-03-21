@@ -124,3 +124,4 @@ class ArtistGroupDetailView(APIView):
         artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)
         artist_group.delete()
         return Response({"message": "아티스트 그룹이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+

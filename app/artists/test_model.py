@@ -48,3 +48,4 @@ class ArtistModelTest(TestCase):
 
     def test_artist_group_image_relationship(self):
         self.assertEqual(self.artist_group.image, self.group_image)
+

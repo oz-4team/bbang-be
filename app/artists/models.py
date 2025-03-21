@@ -15,6 +15,7 @@ class ArtistGroup(BaseModel):
         return self.artist_group
 
 
+
 class Artist(BaseModel):
     artist_name = models.CharField("이름", max_length=30, default="Unknown")
     artist_group = models.ForeignKey(ArtistGroup, on_delete=models.CASCADE, null=True, blank=True)
