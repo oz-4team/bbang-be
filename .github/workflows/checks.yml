@@ -85,6 +85,7 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "${HOME}/.local/bin" >> $GITHUB_PATH
+
       # 4. Poetry를 사용하여 의존성 패키지 설치
       - name: Install Packages & Libraries
         run:
@@ -94,10 +95,12 @@ jobs:
       - name: Run isort (Import sorting)
         run: |
           poetry run isort . --check --diff
+
       # 6. black 실행 (PEP8 코드 스타일 체크)
       - name: Run black (Code formatting)
         run: |
           poetry run black . --check
+
       # 7. PostgreSQL 연결 테스트 (DB가 준비될 때까지 대기)
       - name: Wait for PostgreSQL
         run: |
@@ -123,20 +126,20 @@ jobs:
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          poetry run python manage.py makemigrations
-          poetry run python manage.py migrate
+          poetry run python app/manage.py makemigrations
+          poetry run python app/manage.py migrate
 
       - name: Run Django tests
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          poetry run python manage.py test
+          poetry run python app/manage.py test
 
       # 11. Django 테스트 실행
       - name: Test python project
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          poetry run python manage.py test
+          poetry run python app/manage.py test
           
           

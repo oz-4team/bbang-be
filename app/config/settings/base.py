@@ -15,7 +15,7 @@ from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -42,15 +42,20 @@ INSTALLED_APPS = [
     "django_extensions",
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "drf_yasg",
     "app.accounts",
     "app.artists",
     "app.common",
     "app.schedule",
     "app.content",
+    "app",
+    "storages",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -59,6 +64,15 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "https://sub.example.com",
+    "http://localhost:8080",
+    "http://127.0.0.1:9000",
+    "http://localhost:5173",
+]
+
 
 APPEND_SLASH = True
 
@@ -80,7 +94,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "config.wsgi.application"
+WSGI_APPLICATION = "app.config.wsgi.application"
 
 
 # Database
@@ -89,14 +103,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DATABASE_NAME"),
-        "USER": os.environ.get("DATABASE_USER"),
-        "PASSWORD": os.environ.get("DATABASE_PASSWORD"),
-        "HOST": os.environ.get("DATABASE_HOST"),
-        "PORT": os.environ.get("DATABASE_PORT"),
+        "NAME": os.getenv("DATABASE_NAME"),
+        "USER": os.getenv("DATABASE_USER"),
+        "PASSWORD": os.getenv("DATABASE_PASSWORD"),
+        "HOST": os.getenv("DATABASE_HOST"),
+        "PORT": os.getenv("DATABASE_PORT"),
+        # "OPTIONS": {
+        #     "sslmode": "require",  # SSL 적용 (RDS에서 필요할 수 있음)
+        # },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -133,7 +149,7 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+# STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -158,15 +174,12 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
 # 이메일 백엔드 (개발 콘솔용) *수정 필요
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # SMTP 백엔드 사용
-EMAIL_HOST = os.environ.get("EMAIL_HOST")
-EMAIL_PORT = os.environ.get("EMAIL_PORT")
-EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL")
-# os.environ.get -> 환경변수에서 값을 우선 가져온 후 없으면 뒤에 있는 값
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # 네이버 아이디@naver.com
-EMAIL_HOST_PASSWORD = os.environ.get(
-    "EMAIL_HOST_PASSWORD"
-)  # 네이버 비밀번호  -> 깃허브 시크릿 EMAIL_HOST_PASSWORD / 비밀번호 세팅
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")  # 기본 발신자 이메일 주소
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 465))
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True") == "True"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 SITE_URL = os.environ.get("SITE_URL")  # 나중에 도메인으로 변경
 
 # 구글 OAuth2 관련 설정
@@ -188,3 +201,36 @@ SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
+
+
+# Static, Media URL 수정
+STATIC_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbang")}.s3.amazonaws.com/static/'
+MEDIA_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbang")}.s3.amazonaws.com/media/'
+
+
+# STORAGES 작성
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": os.environ.get("S3_ACCESS_KEY", ""),
+            "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY", ""),
+            "bucket_name": os.environ.get("S3_STORAGE_BUCKET_NAME", ""),
+            "region_name": os.environ.get("S3_REGION_NAME", ""),
+            "location": "media",
+            "default_acl": "public-read",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": os.environ.get("S3_ACCESS_KEY", ""),
+            "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY", ""),
+            "bucket_name": os.environ.get("S3_STORAGE_BUCKET_NAME", ""),
+            "region_name": os.environ.get("S3_REGION_NAME", ""),
+            "custom_domain": f'{os.environ.get("S3_STORAGE_BUCKET_NAME", "")}.s3.amazonaws.com',
+            "location": "static",
+            "default_acl": "public-read",
+        },
+    },
+}

@@ -25,6 +25,8 @@ package-mode = false
 python = ">=3.11"
 django = "5.1.7"
 boto3 = "^1.37.13"
+django-storages = "^1.14.5"
+django-cors-headers = "^4.7.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
