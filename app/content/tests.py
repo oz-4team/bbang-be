@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 
-from app.accounts.models import User, UserImage
+from app.accounts.models import User
 from app.artists.models import Artist, ArtistGroup
 from app.schedule.models import Map, Schedule
 
