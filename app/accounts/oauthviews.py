@@ -75,7 +75,7 @@ class GoogleOAuthCallbackView(APIView):
                 "email": user.email,
                 "nickname": user.nickname,
                 "gender": user.gender,
-                "image_url": user.image_url,
+                "image_url": str(user.image_url),
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
             }
@@ -142,7 +142,7 @@ class KakaoOAuthCallbackView(APIView):
                 "email": user.email,
                 "nickname": user.nickname,
                 "gender": user.gender,
-                "image_url": user.image_url,
+                "image_url": str(user.image_url),
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
             }
@@ -210,7 +210,7 @@ class NaverOAuthCallbackView(APIView):
                 "email": user.email,
                 "nickname": user.nickname,
                 "gender": user.gender,
-                "image_url": user.image_url,
+                "image_url": str(user.image_url),
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
             }
