@@ -27,6 +27,7 @@ django = "5.1.7"
 boto3 = "^1.37.13"
 django-storages = "^1.14.5"
 django-cors-headers = "^4.7.0"
+django-webpush = "^0.3.6"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -45,6 +46,8 @@ psycopg2-binary = "^2.9.10"
 pytest = "^8.3.5"
 requests = "^2.32.3"
 python-dotenv = "^1.0.1"
+pillow = "^11.1.0"
+django-cors-headers = "^4.7.0"
 
 
 [tool.black]
