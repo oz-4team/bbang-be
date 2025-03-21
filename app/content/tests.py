@@ -6,7 +6,7 @@ from app.accounts.models import User, UserImage
 from app.artists.models import Artist, ArtistGroup
 from app.schedule.models import Map, Schedule
 
-from .models import Advertisement, Favorites, Likes, Notifications
+from app.content.models import Advertisement, Favorites, Likes, Notifications
 
 
 # Advertisement 모델 테스트
