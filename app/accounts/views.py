@@ -102,9 +102,9 @@ class LoginAPIView(TokenObtainPairView):
                 "email": user.email,  # 사용자 이메일 추가
                 "nickname": user.nickname,  # 사용자 닉네임 추가
                 "is_staff": user.is_staff,  # 관리자 여부 추가
-                "image_url": str(user.image_url)
+                "image_url": user.image_url.url if user.image_url else None
             })
-        return response  # 최종 응답 반환
+        return response
 
 
 # 로그아웃 API
