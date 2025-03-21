@@ -21,7 +21,6 @@ class CustomUserAdmin(admin.ModelAdmin):  # type: ignore
             {
                 "fields": (
                     "email",
-                    "password",
                 ),
             },
         ),
@@ -43,7 +42,6 @@ class CustomUserAdmin(admin.ModelAdmin):  # type: ignore
         ),
     )
     readonly_fields = (
-        "is_staff",
         "is_superuser",
     )  # 관리자가 읽을수 있게 설정
     # 사용자 생성 시 추가 필드 설정

@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework.response import Response
 from app.accounts.models import UserImage
 
 # 현재 프로젝트에서 사용하는 User 모델 객체를 가져옴
@@ -31,10 +31,8 @@ class GoogleOAuthCallbackView(APIView):
             "redirect_uri": settings.GOOGLE_REDIRECT_URI,
             "grant_type": "authorization_code",
         }
-        token_response = requests.post(
-            token_url, data=data, headers={"content-type": "application/x-www-form-urlencoded"}
-        )
-        if token_response.status_code != 200:
+        token_response = requests.post(token_url, data=data, headers={"content-type":"application/x-www-form-urlencoded"})
+        if token_response.status_code!=200:
             error_text = token_response.text
             return HttpResponseBadRequest(f"토큰요청실패: {error_text}")
 
@@ -46,9 +44,10 @@ class GoogleOAuthCallbackView(APIView):
             "https://www.googleapis.com/oauth2/v1/userinfo", headers={"Authorization": f"Bearer {access_token}"}
         ).json()
 
-        response_data = userinfo_response.get("response", {})
         email = userinfo_response.get("email")
         nickname = userinfo_response.get("given_name")
+        if not nickname and email:
+            nickname = email.split('@')[0]
         picture_url = userinfo_response.get("picture")
         gender = userinfo_response.get("gender", None)
 
@@ -169,13 +168,13 @@ class NaverOAuthCallbackView(APIView):
     permission_classes = [AllowAny]
     parser_classes = [JSONParser]
 
-    def get(self, request):
-        return Response(
-            data={"code": request.query_params.get("code"), "state": request.query_params.get("state")}, status=200
-        )
+    # def get(self, request):
+    #     return Response(
+    #         data={"code": request.query_params.get("code"), "state": request.query_params.get("state")}, status=200
+    #     )
 
     def post(self, request):
-        code = request.data.get("code")
+        code= request.data.get("code")
         state = request.data.get("state")
         if not code or not state:
             return HttpResponseBadRequest("인가 코드 또는 상태값이 전달되지 않았습니다.")

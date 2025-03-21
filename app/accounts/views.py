@@ -83,6 +83,7 @@ class LoginAPIView(TokenObtainPairView):
         response = super().post(request, *args, **kwargs)  # JWT 토큰 발급(부모 클래스에서)
         if response.status_code == 200:  # 토큰 발급 성공 시
             tokens = response.data  # 발급된 토큰 데이터를 변수에 저장
+            user = User.objects.get(email=request.data['email'])  # 로그인 요청 데이터에서 이메일을 통해 사용자 조회
             response.set_cookie(  # 쿠키 설정
                 key="access",  # access 쿠키 이름
                 value=tokens["access"],  # 토큰 값 저장 (access)
@@ -96,6 +97,13 @@ class LoginAPIView(TokenObtainPairView):
                 httponly=True,
                 samesite="Lax",
             )
+            # 사용자 정보 추가
+            response.data.update({
+                "email": user.email,  # 사용자 이메일 추가
+                "nickname": user.nickname,  # 사용자 닉네임 추가
+                "is_staff": user.is_staff,  # 관리자 여부 추가
+                "image": user.user_image.image.url if user.user_image and user.user_image.image else None
+            })
         return response  # 최종 응답 반환
 
 
