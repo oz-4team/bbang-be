@@ -8,20 +8,6 @@ from django.db import models
 from app.common.models import BaseModel
 
 
-class UserImage(BaseModel):
-    image_name = models.CharField("이미지 이름", max_length=255, null=True)  # 이미지 이름
-    image_url = models.CharField("이미지 URL", max_length=255, null=True)  # 이미지 URL
-    image_type = models.CharField("이미지 타입", max_length=255, null=True)  # 이미지 파일 타입
-
-    class Meta:
-        db_table = "user_image"  # 실제 DB 테이블명
-        verbose_name = "유저 이미지"
-        verbose_name_plural = "유저 이미지목록"
-
-    def __str__(self):
-        return f"{self.image_name or '기본 이미지'}"  # 이미지 이름이 없으면 기본 이미지
-
-
 # 커스텀 유저 매니저
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -66,13 +52,12 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):  # BaseModel => creat
     age = models.IntegerField("나이", null=True)  # 나이
     social_provider = models.CharField("소셜 제공자", max_length=20, null=True)  # 소셜 로그인 제공자
     social_id = models.CharField("소셜 아이디", max_length=50, null=True)  # 소셜 로그인 식별자
-    user_image = models.ForeignKey(
-        UserImage,
-        on_delete=models.SET_NULL,
-        verbose_name="유저 이미지",
-        db_column="user_image_key",
-        null=True,
-        blank=True,
+    image_url = models.ImageField(
+        '프로필 이미지',               # 필드 설명: 프로필 이미지
+        upload_to='profile_images/',  # 이미지 저장 경로 (AWS S3의 폴더 경로 지정)
+        null=True,                    # DB에 null 허용
+        blank=True,                   # 폼에서 빈 값 허용
+        default='profile_images/default_profile_image.jpg'  # 기본 이미지 경로 (이미지 미제공시 사용)
     )
 
     objects = CustomUserManager()  # 커스텀 매니저 지정

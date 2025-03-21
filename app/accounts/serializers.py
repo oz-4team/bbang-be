@@ -28,4 +28,4 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User  # 모델 설정 <=> CustomUser 모델 <=> User = get_user_model
-        fields = ["email", "password", "nickname", "gender", "age"]  # 수정 목록 + 보여줌
+        fields = ["email", "password", "nickname", "gender", "age", "image_url"]  # 수정 목록 + 보여줌

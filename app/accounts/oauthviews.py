@@ -7,8 +7,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.response import Response
-from app.accounts.models import UserImage
+
+# from app.accounts.models import UserImage  # 더 이상 사용하지 않음
 
 # 현재 프로젝트에서 사용하는 User 모델 객체를 가져옴
 User = get_user_model()
@@ -31,8 +31,10 @@ class GoogleOAuthCallbackView(APIView):
             "redirect_uri": settings.GOOGLE_REDIRECT_URI,
             "grant_type": "authorization_code",
         }
-        token_response = requests.post(token_url, data=data, headers={"content-type":"application/x-www-form-urlencoded"})
-        if token_response.status_code!=200:
+        token_response = requests.post(
+            token_url, data=data, headers={"content-type": "application/x-www-form-urlencoded"}
+        )
+        if token_response.status_code != 200:
             error_text = token_response.text
             return HttpResponseBadRequest(f"토큰요청실패: {error_text}")
 
@@ -61,16 +63,8 @@ class GoogleOAuthCallbackView(APIView):
         )
 
         if picture_url:
-            if user.user_image:
-                user.user_image.image_url = picture_url
-                user.user_image.image_name = f"{nickname or 'google'}_img"
-                user.user_image.image_type = "GoogleProfile"
-                user.user_image.save()
-            else:
-                user.user_image = UserImage.objects.create(
-                    image_url=picture_url, image_name=f"{nickname or 'google'}_img", image_type="GoogleProfile"
-                )
-                user.save()
+            user.image_url = picture_url
+            user.save()
 
         refresh = RefreshToken.for_user(user)
 
@@ -81,7 +75,7 @@ class GoogleOAuthCallbackView(APIView):
                 "email": user.email,
                 "nickname": user.nickname,
                 "gender": user.gender,
-                "image_url": user.user_image.image_url if user.user_image else None,
+                "image_url": user.image_url,
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
             }
@@ -106,7 +100,6 @@ class KakaoOAuthCallbackView(APIView):
         }
         token_response = requests.post(token_url, data=data).json()
 
-        # 디버깅을 위한 로그 추가
         print("Kakao Token Response:", token_response)
 
         access_token = token_response.get("access_token")
@@ -137,16 +130,8 @@ class KakaoOAuthCallbackView(APIView):
         )
 
         if picture_url:
-            if user.user_image:
-                user.user_image.image_url = picture_url
-                user.user_image.image_name = f"{nickname or 'kakao'}_img"
-                user.user_image.image_type = "KakaoProfile"
-                user.user_image.save()
-            else:
-                user.user_image = UserImage.objects.create(
-                    image_url=picture_url, image_name=f"{nickname or 'kakao'}_img", image_type="KakaoProfile"
-                )
-                user.save()
+            user.image_url = picture_url
+            user.save()
 
         refresh = RefreshToken.for_user(user)
 
@@ -157,7 +142,7 @@ class KakaoOAuthCallbackView(APIView):
                 "email": user.email,
                 "nickname": user.nickname,
                 "gender": user.gender,
-                "image_url": user.user_image.image_url if user.user_image else None,
+                "image_url": user.image_url,
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
             }
@@ -168,13 +153,8 @@ class NaverOAuthCallbackView(APIView):
     permission_classes = [AllowAny]
     parser_classes = [JSONParser]
 
-    # def get(self, request):
-    #     return Response(
-    #         data={"code": request.query_params.get("code"), "state": request.query_params.get("state")}, status=200
-    #     )
-
     def post(self, request):
-        code= request.data.get("code")
+        code = request.data.get("code")
         state = request.data.get("state")
         if not code or not state:
             return HttpResponseBadRequest("인가 코드 또는 상태값이 전달되지 않았습니다.")
@@ -218,16 +198,8 @@ class NaverOAuthCallbackView(APIView):
         )
 
         if picture_url:
-            if user.user_image:
-                user.user_image.image_url = picture_url
-                user.user_image.image_name = f"{nickname or 'naver'}_img"
-                user.user_image.image_type = "NaverProfile"
-                user.user_image.save()
-            else:
-                user.user_image = UserImage.objects.create(
-                    image_url=picture_url, image_name=f"{nickname or 'naver'}_img", image_type="NaverProfile"
-                )
-                user.save()
+            user.image_url = picture_url
+            user.save()
 
         refresh = RefreshToken.for_user(user)
 
@@ -238,7 +210,7 @@ class NaverOAuthCallbackView(APIView):
                 "email": user.email,
                 "nickname": user.nickname,
                 "gender": user.gender,
-                "image_url": user.user_image.image_url if user.user_image else None,
+                "image_url": user.image_url,
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
             }
