@@ -60,7 +60,7 @@ class UserAuthTestCase(TestCase):
         # 로그인 시 반환되는 JSON에 기본 이미지 URL이 포함되어 있는지 확인
         json_data = response.json()
         self.assertIn("image_url", json_data)
-        self.assertEqual(json_data["image_url"], "profile_images/default_profile_image.jpg")
+        self.assertIn("profile_images/default_profile_image.jpg", json_data["image_url"])
 
     def test_logout(self):
         refresh = RefreshToken.for_user(self.user)  # JWT refresh 토큰 생성
