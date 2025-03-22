@@ -1,50 +1,36 @@
-import pytest
 from django.test import TestCase
+from app.artists.models import Artist, ArtistGroup
 
-from app.artists.models import Artist, ArtistGroup, ArtistGroupImage, ArtistImage
+class ArtistGroupModelTest(TestCase):
+    def setUp(self):
+        self.artist_group = ArtistGroup.objects.create(
+            artist_group="test_group",  # 아티스트 그룹 이름
+            artist_agency="test_agency",  # 소속사 이름
+            group_insta="test_insta",  # 인스타그램 계정
+            image_url="artist_groups/test_group_image.jpg"  # 그룹 이미지 URL 설정
+        )
 
-# Create your tests here.
-
+    def test_str_method(self):
+        self.assertEqual(str(self.artist_group), "test_group")
 
 class ArtistModelTest(TestCase):
     def setUp(self):
-        self.group_image = ArtistGroupImage.objects.create(
-            image_name="test_group_image", image_url="http://example.com/group.jpg", image_type="jpg"
-        )
-
         self.artist_group = ArtistGroup.objects.create(
-            artist_group="test_group", artist_agency="test_agency", group_insta="test_insta", image=self.group_image
+            artist_group="test_group",  # 아티스트 그룹 이름
+            artist_agency="test_agency",  # 소속사 이름
+            group_insta="test_insta",  # 인스타그램 계정
+            image_url="artist_groups/test_group_image.jpg"  # 그룹 이미지 URL 설정
         )
-
-        self.artist_image = ArtistImage.objects.create(
-            image_name="test_image", image_url="http://example.com/artist.jpg", image_type="jpg"
-        )
-
         self.artist = Artist.objects.create(
-            artist_name="test_artist",
-            artist_group=self.artist_group,
-            artist_agency="test_agency",
-            artist_insta="artist_insta",
-            image=self.artist_image,
+            artist_name="test_artist",  # 아티스트 이름
+            artist_group=self.artist_group,  # 아티스트 그룹화
+            artist_agency="test_agency",  # 소속사 이름
+            artist_insta="test_insta",  # 인스타그램 계정
+            image_url="artists/test_artist_image.jpg"  # 아티스트 이미지 URL 설정
         )
 
-    def test_artist_str(self):
+    def test_str_method(self):
         self.assertEqual(str(self.artist), "test_artist")
-
-    def test_artist_group_str(self):
-        self.assertEqual(str(self.artist_group), "test_group")
-
-    def test_artist_image_str(self):
-        self.assertEqual(str(self.artist_image), "test_image")
-
-    def test_artist_group_image_str(self):
-        self.assertEqual(str(self.group_image), "test_group_image")
 
     def test_artist_group_relationship(self):
         self.assertEqual(self.artist.artist_group, self.artist_group)
-
-    def test_artist_image_relationship(self):
-        self.assertEqual(self.artist.image, self.artist_image)
-
-    def test_artist_group_image_relationship(self):
-        self.assertEqual(self.artist_group.image, self.group_image)
