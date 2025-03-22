@@ -1,11 +1,11 @@
-from django.urls import include, path
+from django.urls import path
 
-from app.accounts.oauthviews import (
+from app.accounts.views.oauthviews import (
     GoogleOAuthCallbackView,
     KakaoOAuthCallbackView,
     NaverOAuthCallbackView,
 )
-from app.accounts.views import (
+from app.accounts.views.views import (
     CheckResetTokenAPIView,
     LoginAPIView,
     LogoutAPIView,
