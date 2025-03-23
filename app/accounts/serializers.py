@@ -1,7 +1,8 @@
 import datetime
+
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
 
 from app.accounts.email import send_verification_email
 
@@ -45,11 +46,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data["gender"] = gender
 
         user = User.objects.create_user(
-            email=validated_data["email"],           # 검증된 이메일 값 전달
-            password=validated_data["password"],     # 검증된 비밀번호 값 전달
-            nickname=validated_data["nickname"],     # 검증된 닉네임 값 전달
-            gender=validated_data.get("gender", ""),   # 성별 (기본값은 빈 문자열)
-            age=validated_data.get("age")              # 계산된 나이 (정수 또는 None)
+            email=validated_data["email"],  # 검증된 이메일 값 전달
+            password=validated_data["password"],  # 검증된 비밀번호 값 전달
+            nickname=validated_data["nickname"],  # 검증된 닉네임 값 전달
+            gender=validated_data.get("gender", ""),  # 성별 (기본값은 빈 문자열)
+            age=validated_data.get("age"),  # 계산된 나이 (정수 또는 None)
         )
         # 이미지가 제공되면, User의 image_url 필드에 할당 후 저장
         if image:

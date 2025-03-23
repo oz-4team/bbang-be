@@ -29,9 +29,7 @@ class UserModelTests(TestCase):
         self.assertEqual(str(staff), "StaffUser")
 
     def test_create_superuser(self):
-        superuser = User.objects.create_superuser(
-            email="admin@example.com", password="admin123", nickname="AdminUser"
-        )
+        superuser = User.objects.create_superuser(email="admin@example.com", password="admin123", nickname="AdminUser")
         self.assertEqual(superuser.email, "admin@example.com")
         self.assertTrue(superuser.is_staff)
         self.assertTrue(superuser.is_superuser)
@@ -44,9 +42,7 @@ class UserModelTests(TestCase):
         )
         self.assertEqual(str(user_with_nickname), "Nickname")
 
-        user_without_nickname = User.objects.create_user(
-            email="noname@example.com", password="pass123", nickname=""
-        )
+        user_without_nickname = User.objects.create_user(email="noname@example.com", password="pass123", nickname="")
         self.assertEqual(str(user_without_nickname), "noname@example.com")
 
     def test_default_image_url(self):

@@ -16,19 +16,12 @@ class UserAuthTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()  # API 요청을 위한 클라이언트 생성
         self.user = User.objects.create_user(
-            email="testuser@example.com",
-            password="testpassword",
-            nickname="testuser",
-            is_active=True  # 계정 활성화
+            email="testuser@example.com", password="testpassword", nickname="testuser", is_active=True  # 계정 활성화
         )
 
     def test_register(self):
         url = "/register/"  # 회원가입 엔드포인트
-        data = {
-            "email": "testuser1@example.com",
-            "password": "testpassword",
-            "nickname": "testuser"
-        }
+        data = {"email": "testuser1@example.com", "password": "testpassword", "nickname": "testuser"}
         response = self.client.post(url, data)  # POST 요청
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn("회원가입 성공", response.json()["message"])
@@ -47,10 +40,7 @@ class UserAuthTestCase(TestCase):
 
     def test_login(self):
         url = "/login/"  # 로그인 엔드포인트
-        data = {
-            "email": "testuser@example.com",
-            "password": "testpassword"
-        }
+        data = {"email": "testuser@example.com", "password": "testpassword"}
         response = self.client.post(url, data)  # 로그인 POST 요청
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -112,11 +102,7 @@ class UserAuthTestCase(TestCase):
 class PasswordResetTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()  # API 클라이언트 생성
-        self.user = User.objects.create_user(
-            email="userreset@example.com",
-            password="testpassword",
-            is_active=True
-        )
+        self.user = User.objects.create_user(email="userreset@example.com", password="testpassword", is_active=True)
 
     def test_request_password_reset(self):
         url = "/password-reset/request/"  # 비밀번호 재설정 요청 엔드포인트
@@ -143,6 +129,7 @@ class PasswordResetTestCase(TestCase):
         login_response = self.client.post(login_url, login_data)
 
         self.assertEqual(login_response.status_code, status.HTTP_200_OK)
+
 
 #
 # class RealS3UploadTestCase(TestCase):  # S3 연결 테스트 (성공)

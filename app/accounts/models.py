@@ -53,11 +53,11 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):  # BaseModel => creat
     social_provider = models.CharField("소셜 제공자", max_length=20, null=True)  # 소셜 로그인 제공자
     social_id = models.CharField("소셜 아이디", max_length=50, null=True)  # 소셜 로그인 식별자
     image_url = models.ImageField(
-        '프로필 이미지',               # 필드 설명: 프로필 이미지
-        upload_to='profile_images/',  # 이미지 저장 경로 (AWS S3의 폴더 경로 지정)
-        null=True,                    # DB에 null 허용
-        blank=True,                   # 폼에서 빈 값 허용
-        default='profile_images/default_profile_image.jpg'  # 기본 이미지 경로 (이미지 미제공시 사용)
+        "프로필 이미지",  # 필드 설명: 프로필 이미지
+        upload_to="profile_images/",  # 이미지 저장 경로 (AWS S3의 폴더 경로 지정)
+        null=True,  # DB에 null 허용
+        blank=True,  # 폼에서 빈 값 허용
+        default="profile_images/default_profile_image.jpg",  # 기본 이미지 경로 (이미지 미제공시 사용)
     )
 
     objects = CustomUserManager()  # 커스텀 매니저 지정

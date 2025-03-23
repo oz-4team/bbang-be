@@ -49,7 +49,7 @@ class GoogleOAuthCallbackView(APIView):
         email = userinfo_response.get("email")
         nickname = userinfo_response.get("given_name")
         if not nickname and email:
-            nickname = email.split('@')[0]
+            nickname = email.split("@")[0]
         picture_url = userinfo_response.get("picture")
         gender = userinfo_response.get("gender", None)
 
