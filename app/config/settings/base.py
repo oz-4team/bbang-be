@@ -117,9 +117,9 @@ DATABASES = {
 }
 
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
 
@@ -183,12 +183,12 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
 # 이메일 백엔드 (개발 콘솔용) *수정 필요
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # SMTP 백엔드 사용
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 465))
-EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True") == "True"
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 465))
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "True") == "True"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 SITE_URL = os.environ.get("SITE_URL")  # 나중에 도메인으로 변경
 
 # 구글 OAuth2 관련 설정
@@ -213,8 +213,8 @@ AUTHENTICATION_BACKENDS = [
 
 
 # Static, Media URL 수정
-STATIC_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbang")}.s3.amazonaws.com/static/'
-MEDIA_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbang")}.s3.amazonaws.com/media/'
+STATIC_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbangbackend")}.s3.amazonaws.com/static/'
+MEDIA_URL = f'https://{os.environ.get("S3_STORAGE_BUCKET_NAME", "bbangbackend")}.s3.amazonaws.com/media/'
 
 
 # STORAGES 작성
@@ -224,7 +224,7 @@ STORAGES = {
         "OPTIONS": {
             "access_key": os.environ.get("S3_ACCESS_KEY", ""),
             "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY", ""),
-            "bucket_name": os.environ.get("S3_STORAGE_BUCKET_NAME", ""),
+            "bucket_name": os.environ.get("S3_STORAGE_BUCKET_NAME", "bbangbackend"),
             "region_name": os.environ.get("S3_REGION_NAME", ""),
             "location": "media",
             "default_acl": "public-read",
@@ -235,7 +235,7 @@ STORAGES = {
         "OPTIONS": {
             "access_key": os.environ.get("S3_ACCESS_KEY", ""),
             "secret_key": os.environ.get("S3_SECRET_ACCESS_KEY", ""),
-            "bucket_name": os.environ.get("S3_STORAGE_BUCKET_NAME", ""),
+            "bucket_name": os.environ.get("S3_STORAGE_BUCKET_NAME", "bbangbackend"),
             "region_name": os.environ.get("S3_REGION_NAME", ""),
             "custom_domain": f'{os.environ.get("S3_STORAGE_BUCKET_NAME", "")}.s3.amazonaws.com',
             "location": "static",
