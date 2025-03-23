@@ -1,10 +1,10 @@
-from django.core.exceptions import ValidationError  # 커스텀 검증 에러 처리를 위한 모듈
-from django.db import models  # Django ORM 모델 사용
+from django.core.exceptions import ValidationError
+from django.db import models
 
-from app.accounts.models import User  # 사용자 모델 import
-from app.artists.models import Artist, ArtistGroup  # 아티스트 및 아티스트 그룹 모델 import
-from app.common.models import BaseModel  # 생성일자, 수정일자 등 공통 필드 포함 BaseModel import
-from app.schedule.models import Schedule  # 일정(Schedule) 모델 import
+from app.accounts.models import User
+from app.artists.models import Artist, ArtistGroup
+from app.common.models import BaseModel
+from app.schedule.models import Schedule
 
 
 # 광고 모델
