@@ -1,10 +1,11 @@
 from django.urls import path
+
 from app.artists.views import (
     ArtistAndGroupListView,
-    ArtistListView,
     ArtistDetailView,
-    ArtistGroupListView,
     ArtistGroupDetailView,
+    ArtistGroupListView,
+    ArtistListView,
 )
 
 urlpatterns = [

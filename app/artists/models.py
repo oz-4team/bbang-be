@@ -1,5 +1,7 @@
 from django.db import models
+
 from app.common.models import BaseModel
+
 
 class ArtistGroup(BaseModel):
     artist_group = models.CharField("아티스트 그룹", max_length=30, null=True, blank=True)
@@ -14,7 +16,6 @@ class ArtistGroup(BaseModel):
 
     def __str__(self):
         return self.artist_group
-
 
 
 class Artist(BaseModel):

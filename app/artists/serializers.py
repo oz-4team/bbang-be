@@ -1,5 +1,6 @@
-from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField  # Base64 인코딩 이미지를 처리하기 위한 필드
+from rest_framework import serializers
+
 from app.artists.models import Artist, ArtistGroup
 
 
