@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,7 +9,7 @@ from app.artists.serializers import ArtistGroupSerializer, ArtistSerializer
 
 
 class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티스트를 동시에 조회
-    permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근가능
+    permission_classes = [AllowAny]  # 인증된 사용자만 접근가능
 
     def get(self, request):
         artists = Artist.objects.all()  # 전체 개별 아티스트 조회
