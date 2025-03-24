@@ -115,10 +115,10 @@ class ArtistGroupListView(APIView):
 
 class ArtistGroupDetailView(APIView):
 
-    def get_permissions(self):
-        if self.request.method == "GET":  # method가 get이면 인증된 사용자만 접근 가능하게 권한 수정
-            return [IsAuthenticated()]
-        return [IsAdminUser()]
+    # def get_permissions(self):
+    #     if self.request.method == "GET":  # method가 get이면 인증된 사용자만 접근 가능하게 권한 수정
+    #         return [IsAuthenticated()]
+    #     return [IsAdminUser()]
 
     def get(self, request, artist_group_id):
         artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)  # 조회할 그룹 아티스트 조회
