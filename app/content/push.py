@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from webpush import send_user_notification
 
+
 def send_web_push_notification(user, message, head="알림", icon="/static/img/notification-icon.png", url=""):
     payload = {
         "head": head,  # 알림 제목 (기본값: "알림")
