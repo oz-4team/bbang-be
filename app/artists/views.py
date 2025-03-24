@@ -16,12 +16,10 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
         artist_groups = ArtistGroup.objects.all()  # 전체 그룹 아티스트 조회
         artist_serializer = ArtistSerializer(artists, many=True)  # 개별 아티스트 데이터를 직렬화
         artist_group_serializer = ArtistGroupSerializer(artist_groups, many=True)  # 그룹 아티스트 데이터를 직렬화
+        data = artist_serializer.data + artist_group_serializer.data  # 개별 아티스트와 그룹 아티스트 데이터를 하나의 리스트로 병합
         return Response(
-            {
-                "artists": artist_serializer.data,  # 직렬화된 개별 아티스트 데이터 반환
-                "artist_groups": artist_group_serializer.data,  # 직렬화된 그룹 아티스트 데이터 반환
-            },
-            status=status.HTTP_200_OK,
+            {"data": data},  # 병합된 데이터를 'data' 키로 반환
+            status=status.HTTP_200_OK,  # 200 OK 상태 코드 반환
         )  # 200 OK 상태 코드 반환
 
 
