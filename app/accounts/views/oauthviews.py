@@ -78,6 +78,7 @@ class GoogleOAuthCallbackView(APIView):
                 "image_url": str(user.image_url),
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
+                "is_staff": user.is_staff,
             }
         )
 
@@ -145,6 +146,7 @@ class KakaoOAuthCallbackView(APIView):
                 "image_url": str(user.image_url),
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
+                "is_staff": user.is_staff,
             }
         )
 
@@ -213,5 +215,6 @@ class NaverOAuthCallbackView(APIView):
                 "image_url": str(user.image_url),
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
+                "is_staff": user.is_staff,
             }
         )
