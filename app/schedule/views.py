@@ -1,7 +1,5 @@
-import os
 from decimal import ROUND_DOWN, Decimal
 
-import requests
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
@@ -14,41 +12,12 @@ from app.schedule.models import Schedule
 from app.schedule.serializers import (
     ScheduleSerializer,
 )
-
-
-def kakao_location(location):
-    try:
-        # 주소 검색 엔드포인트
-        url_address = "https://dapi.kakao.com/v2/local/search/address.json"
-        # 키워드 검색 엔드포인트
-        url_keyword = "https://dapi.kakao.com/v2/local/search/keyword.json"
-        params = {"query": location}  # 검색할 위치 정보
-        api_key = os.environ.get("KAKAO_CLIENT_ID")  # 환경 변수에서 API 키 가져오기
-        if api_key and not api_key.startswith("KakaoAK"):
-            api_key = "KakaoAK " + api_key  # API 키 앞에 접두사 추가  # 없으면 동작안함..
-        headers = {"Authorization": api_key, "User-Agent": "bbang-app"}
-        # 주소 검색을 시도
-        response = requests.get(url_address, params=params, headers=headers)
-        data = response.json()
-        if data and data.get("documents"):
-            document = data["documents"][0]
-            if "address" in document:
-                lon = document["address"]["x"]
-                lat = document["address"]["y"]
-                return lat, lon
-
-        # 주소 검색 결과가 없으면 키워드 검색 시도
-        response = requests.get(url_keyword, params=params, headers=headers)
-        data = response.json()
-        if data and data.get("documents"):
-            document = data["documents"][0]
-            lon = document["x"]
-            lat = document["y"]
-            return lat, lon
-
-    except Exception as e:
-        print("map error:", e)
-    return None, None  # 오류나 결과가 없을 경우 None 반환
+from app.schedule.utiles import (
+    Notification_likes_schedule_create_send,
+    Notification_likes_schedule_delete_send,
+    Notification_likes_schedule_update_send,
+    kakao_location,
+)
 
 
 # 일반 유저 조회 API
@@ -131,6 +100,7 @@ class ArtistScheduleManageView(APIView):
         serializer = ScheduleSerializer(data=request.data)  # 직렬화
         if serializer.is_valid():  # 유효하면
             schedule = serializer.save()  # 저장
+            Notification_likes_schedule_create_send(schedule)
             return Response(serializer.data, status=status.HTTP_201_CREATED)  # 직렬화 데이터 상태코드 반환
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 에러, 상태코드 반환
 
@@ -152,7 +122,8 @@ class ArtistScheduleManageView(APIView):
 
         serializer = ScheduleSerializer(schedule, data=request.data, partial=True)  # 직렬화
         if serializer.is_valid():  # 유효하면
-            serializer.save()  # 저장
+            serializer.save()
+            Notification_likes_schedule_update_send(schedule)
             return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 에러, 상태코드 반환
 
@@ -162,6 +133,7 @@ class ArtistScheduleManageView(APIView):
             return Response({"error": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)  # 에러, 상태코드 반환
 
         schedule = get_object_or_404(Schedule, id=schedule_id, artist__isnull=False)
+        Notification_likes_schedule_delete_send(schedule, schedule.title)
         schedule.delete()
         return Response({"message": "일정이 삭제되었습니다."}, status=status.HTTP_200_OK)  # 메세지, 상태코드 반환
 
@@ -197,6 +169,7 @@ class ArtistGroupScheduleManageView(APIView):
         serializer = ScheduleSerializer(data=request.data)  # 직렬화
         if serializer.is_valid():  # 유효하면
             schedule = serializer.save()  # 저장
+            Notification_likes_schedule_create_send(schedule)
             return Response(serializer.data, status=status.HTTP_201_CREATED)  # 직렬화 데이터 상태코드 반환
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 에러, 상태코드 반환
 
@@ -219,6 +192,7 @@ class ArtistGroupScheduleManageView(APIView):
         serializer = ScheduleSerializer(schedule, data=request.data, partial=True)  # 직렬화
         if serializer.is_valid():  # 유효하면
             serializer.save()  # 저장
+            Notification_likes_schedule_update_send(schedule)
             return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 에러, 상태코드 반환
 
@@ -226,7 +200,7 @@ class ArtistGroupScheduleManageView(APIView):
         user = request.user  # 유저정보 가져옴
         if not user.is_staff:  # 권한 없으면 예외처리
             return Response({"error": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)  # 에러, 상태코드 반환
-
         schedule = get_object_or_404(Schedule, id=schedule_id, artist_group__isnull=False)  # 조회 없으면 404
+        Notification_likes_schedule_delete_send(schedule, schedule.title)
         schedule.delete()  # 일정 삭제
         return Response({"message": "일정이 삭제되었습니다."}, status=status.HTTP_200_OK)  # 메세지, 상태코드 반환
