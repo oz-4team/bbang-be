@@ -56,10 +56,10 @@ class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
 
 class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, 삭제
 
-    def get_permissions(self):
-        if self.request.method == "GET":  # method가 get이면 인증된 사용자만 접근 가능하게 권한 수정
-            return [IsAuthenticated()]
-        return [IsAdminUser()]
+    # def get_permissions(self):
+    #     if self.request.method == "GET":  # method가 get이면 인증된 사용자만 접근 가능하게 권한 수정
+    #         return [IsAuthenticated()]
+    #     return [IsAdminUser()]
 
     def get(self, request, artist_id):
         artist = get_object_or_404(Artist, id=artist_id)  # 지정한 ID의 아티스트 조회, 없으면 404 반환
@@ -92,11 +92,11 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
 
 class ArtistGroupListView(APIView):
 
-    def get_permissions(self):
-
-        if self.request.method == "GET":  # method가 get이면 인증된 사용자만 접근 가능하게 권한 수정
-            return [IsAuthenticated()]
-        return [IsAdminUser()]
+    # def get_permissions(self):
+    #
+    #     if self.request.method == "GET":  # method가 get이면 인증된 사용자만 접근 가능하게 권한 수정
+    #         return [IsAuthenticated()]
+    #     return [IsAdminUser()]
 
     def get(self, request):
         artist_groups = ArtistGroup.objects.all()  # 전체 그룹 아티스트 조회
