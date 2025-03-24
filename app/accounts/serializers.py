@@ -24,7 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # image 필드가 존재하면 꺼내고, 나머지 데이터는 그대로 사용
-        image = validated_data.pop("image", None)
+        image_url = validated_data.pop("image", None)
         # 성별은 없으면 빈 문자열로 처리
         gender = validated_data.get("gender", "")
         # 나이 필드 처리: 프론트에서 출생년도를 전달하는 경우 (예: "2000")
@@ -53,8 +53,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             age=validated_data.get("age"),  # 계산된 나이 (정수 또는 None)
         )
         # 이미지가 제공되면, User의 image_url 필드에 할당 후 저장
-        if image:
-            user.image_url = image
+        if image_url:
+            user.image_url = image_url
             user.save()
         # 사용자 생성 후 이메일 인증 전송
         send_verification_email(user)
