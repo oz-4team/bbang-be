@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -16,7 +16,9 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
         artist_groups = ArtistGroup.objects.all()  # 전체 그룹 아티스트 조회
         artist_serializer = ArtistSerializer(artists, many=True)  # 개별 아티스트 데이터를 직렬화
         artist_group_serializer = ArtistGroupSerializer(artist_groups, many=True)  # 그룹 아티스트 데이터를 직렬화
-        data = artist_serializer.data + artist_group_serializer.data  # 개별 아티스트와 그룹 아티스트 데이터를 하나의 리스트로 병합
+        data = (
+            artist_serializer.data + artist_group_serializer.data
+        )  # 개별 아티스트와 그룹 아티스트 데이터를 하나의 리스트로 병합
         return Response(
             {"data": data},  # 병합된 데이터를 'data' 키로 반환
             status=status.HTTP_200_OK,  # 200 OK 상태 코드 반환
