@@ -125,3 +125,23 @@ class Notifications(BaseModel):
         likes_str = self.likes.__str__() if self.likes else "No Likes"
         favorites_str = self.favorites.__str__() if self.favorites else "No Favorites"
         return f"{self.is_active} - {likes_str} - {favorites_str}"
+
+
+class authority(BaseModel):
+    artistName = models.CharField("아티스트(개인, 그룹) 이름", max_length=20)
+    artist_agency = models.CharField("소속사", max_length=20)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="신청 유저")
+    phone_number = models.CharField("전화번호", max_length=15)
+    image_url = models.ImageField(
+        "첨부파일",  # 필드 설명: 첨부파일
+        upload_to="authority/",  # 이미지 저장 경로 (AWS S3의 폴더 경로 지정)
+        null=True,  # DB에 null 허용
+        blank=True,  # 폼에서 빈 값 허용
+    )
+
+    class Meta:
+        verbose_name = "권한 신청"
+        verbose_name_plural = "권한 신청 목록"
+
+    def __str__(self):
+        return f"{self.artistName} - {self.artist_agency} - 권한 신청자 = {self.user.email}"
