@@ -13,18 +13,18 @@ User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)  # 비밀번호는 쓰기 전용으로 설정
     # 프론트엔드에서 base64 인코딩된 이미지를 "image" 키로 전달하면 처리함
-    image = Base64ImageField(required=False, allow_null=True)
+    image_url = Base64ImageField(required=False, allow_null=True)
     # 나이와 성별은 선택적으로 전달 있으면 나이 없으면 null값
     gender = serializers.CharField(required=False, allow_blank=True)
     age = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User  # User 모델
-        fields = ("email", "password", "nickname", "gender", "age", "image")
+        fields = ("email", "password", "nickname", "gender", "age", "image_url")
 
     def create(self, validated_data):
         # image 필드가 존재하면 꺼내고, 나머지 데이터는 그대로 사용
-        image_url = validated_data.pop("image", None)
+        image_url = validated_data.pop("image_url", None)
         # 성별은 없으면 빈 문자열로 처리
         gender = validated_data.get("gender", "")
         # 나이 필드 처리: 프론트에서 출생년도를 전달하는 경우 (예: "2000")
