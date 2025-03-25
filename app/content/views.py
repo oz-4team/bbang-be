@@ -101,11 +101,12 @@ class AllFavoritesAPIView(APIView):
         favorites = Favorites.objects.filter(user=user)  # 사용자가 즐겨찾기한 모든 일정 조회
         response_data = [
             {
-                "favorite_id": favorite.id,  # 즐겨찾기 고유 ID
-                "schedule_title": favorite.schedule.title,  # 즐겨찾기한 일정 제목
-                "schedule_description": favorite.schedule.description,  # 일정 설명
+                "favorite_id": fav.id,
+                "schedule_id": fav.schedule.id,
+                "schedule_title": fav.schedule.title,
+                "schedule_description": fav.schedule.description,
             }
-            for favorite in favorites
+            for fav in favorites
         ]
         return Response(response_data, status=status.HTTP_200_OK)  # 결과반환, 상태반환
 
@@ -119,11 +120,11 @@ class SingleFavoriteAPIView(APIView):
         favorite = get_object_or_404(Favorites, id=favorite_id, user=user)  # 조회 없으면 404
         response_data = {
             "favorite_id": favorite.id,
+            "schedule_id": favorite.schedule.id,
             "schedule_title": favorite.schedule.title,
             "schedule_description": favorite.schedule.description,
         }
         return Response(response_data, status=status.HTTP_200_OK)  # 결과반환, 상태코드
-
 
 # 즐겨찾기 생성 및 삭제 API
 class FavoriteAPIView(APIView):
