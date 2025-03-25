@@ -16,7 +16,11 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+log_dir = BASE_DIR / "logs"
 
+# 로그 디렉터리가 존재하지 않으면 생성
+if not log_dir.exists():
+    log_dir.mkdir(parents=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -252,49 +256,68 @@ STORAGES = {
 
 # Logging
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
         },
     },
-    'handlers': {
-        'artist_file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'artist_errors.log'),
-            'formatter': 'verbose',
+    "handlers": {
+        "account_file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": log_dir / "account_errors.log",
+            "formatter": "verbose",
+            "maxBytes": 1024 * 1024 * 5,  # 5MB 이상이면 새로운 파일 생성
+            "backupCount": 5,  # 최대 5개까지 보관
         },
-        'schedule_file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'schedule_errors.log'),
-            'formatter': 'verbose',
+        "artist_file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": log_dir / "artist_errors.log",
+            "formatter": "verbose",
+            "maxBytes": 1024 * 1024 * 5,
+            "backupCount": 5,
+        },
+        "schedule_file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": log_dir / "schedule_errors.log",
+            "formatter": "verbose",
+            "maxBytes": 1024 * 1024 * 5,
+            "backupCount": 5,
+        },
+        "content_file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": log_dir / "content_errors.log",
+            "formatter": "verbose",
+            "maxBytes": 1024 * 1024 * 5,
+            "backupCount": 5,
         },
     },
-    'loggers': {
-        'account': {  # Account API 관련 로그
-            'handlers': ['account_file'],
-            'level': 'ERROR',
-            'propagate': False,
+    "loggers": {
+        "account": {  # Account API 관련 로그
+            "handlers": ["account_file"],
+            "level": "ERROR",
+            "propagate": False,
         },
-        'artist': {  # Artist API 관련 로그
-            'handlers': ['artist_file'],
-            'level': 'ERROR',
-            'propagate': False,
+        "artist": {  # Artist API 관련 로그
+            "handlers": ["artist_file"],
+            "level": "ERROR",
+            "propagate": False,
         },
-        'schedule': {  # Schedule API 관련 로그
-            'handlers': ['schedule_file'],
-            'level': 'ERROR',
-            'propagate': False,
+        "schedule": {  # Schedule API 관련 로그
+            "handlers": ["schedule_file"],
+            "level": "ERROR",
+            "propagate": False,
         },
-        'content': {  # Content API 관련 로그
-            'handlers': ['schedule_file'],
-            'level': 'ERROR',
-            'propagate': False,
+        "content": {  # Content API 관련 로그
+            "handlers": ["schedule_file"],
+            "level": "ERROR",
+            "propagate": False,
         },
-
     },
 }
