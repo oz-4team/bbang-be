@@ -28,6 +28,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+# ALLOWED_HOSTS 설정 이후에 CSRF_TRUSTED_ORIGINS를 추가합니다.
+CSRF_TRUSTED_ORIGINS = [  # CSRF 검증을 위한 신뢰할 도메인 목록 설정
+    "https://seonhm.kr",  # HTTPS 스킴과 함께 seonhm.kr 도메인 추가
+]
+
 
 # Application definition
 
