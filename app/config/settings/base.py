@@ -249,3 +249,52 @@ STORAGES = {
         },
     },
 }
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'artist_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'artist_errors.log'),
+            'formatter': 'verbose',
+        },
+        'schedule_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'schedule_errors.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'account': {  # Account API 관련 로그
+            'handlers': ['account_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'artist': {  # Artist API 관련 로그
+            'handlers': ['artist_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'schedule': {  # Schedule API 관련 로그
+            'handlers': ['schedule_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'content': {  # Content API 관련 로그
+            'handlers': ['schedule_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+
+    },
+}
