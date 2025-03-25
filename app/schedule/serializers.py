@@ -51,6 +51,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
             "artist_id",
             "artist_group",
             "artist_group_id",
+            "is_favorited",
             "image_url",
         ]
         extra_fields = ["is_favorited"]
