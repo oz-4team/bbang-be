@@ -71,8 +71,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:9000",
     "http://localhost:5173",
-    "http://bbangfe.s3-website.ap-northeast-2.amazonaws.com",
-    "http://idolsync.kro.kr",
+    "https://bbangfe.s3-website.ap-northeast-2.amazonaws.com",
+    "https://idolsync.kro.kr",
+    "https://seonhm.kr"
 ]
 
 
@@ -101,7 +102,7 @@ WSGI_APPLICATION = "app.config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+#
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -185,7 +186,7 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # SMTP 백엔드 사용
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 465))
-EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "True") == "True"
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "True")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
