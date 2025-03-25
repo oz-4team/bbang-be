@@ -3,12 +3,14 @@ from rest_framework import serializers
 
 from app.artists.models import Artist, ArtistGroup
 from app.artists.serializers import ArtistGroupSerializer, ArtistSerializer
+from app.content.models import Favorites
 from app.schedule.models import Schedule
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
     # base64 인코딩 데이터를 받아 S3 등 스토리지에 저장할 수 있도록 처리
     image_url = Base64ImageField(required=False, allow_null=True)
+    is_favorited = serializers.SerializerMethodField()
 
     # 조회 시: artist 필드는 nested serializer로 자세한 정보를 반환
     artist = ArtistSerializer(read_only=True)  # 읽기 전용 아티스트 정보
@@ -51,7 +53,14 @@ class ScheduleSerializer(serializers.ModelSerializer):
             "artist_group_id",
             "image_url",
         ]
+        extra_fields = ["is_favorited"]
         read_only_fields = ["user"]  # 사용자 필드는 읽기 전용으로 처리
 
     def create(self, validated_data):
         return super().create(validated_data)
+
+    def get_is_favorited(self, obj):
+        user = self.context.get("request").user  # 요청한 유저 정보
+        if user.is_anonymous:  # 비로그인 유저는 무조건 false
+            return False
+        return Favorites.objects.filter(user=user, schedule=obj).exists()  # 즐겨찾기 여부

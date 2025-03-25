@@ -8,7 +8,6 @@ from app.content.views import (
     AllLikesAPIView,
     FavoriteAPIView,
     LikeAPIView,
-    SingleFavoriteAPIView,
     SingleLikeAPIView,
     StaffUpAPIView,
 )
@@ -16,10 +15,9 @@ from app.content.views import (
 urlpatterns = [
     path("like/", LikeAPIView.as_view(), name="like"),
     path("Alllike/", AllLikesAPIView.as_view(), name="Alllike"),
-    path("userlike/", SingleLikeAPIView.as_view(), name="userlike"),
+    path("userlike/<int:like_id>/", SingleLikeAPIView.as_view(), name="userlike"),
     path("favorite/", FavoriteAPIView.as_view(), name="favorite"),
     path("Allfavorite/", AllFavoritesAPIView.as_view(), name="Allfavorite"),
-    path("userfavorite/<int:favorite_id>/", SingleFavoriteAPIView.as_view(), name="userfavorite"),
     path("advertisement/list/", AdvertisementListAPIView.as_view(), name="advertisement_list"),
     path("advertisement/<int:advertisement_id>/", AdvertisementDetailAPIView.as_view(), name="advertisement_detail"),
     path("advertisement/", AdvertisementManageAPIView.as_view(), name="advertisement_manage"),

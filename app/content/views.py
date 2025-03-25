@@ -110,22 +110,6 @@ class AllFavoritesAPIView(APIView):
         ]
         return Response(response_data, status=status.HTTP_200_OK)  # 결과반환, 상태반환
 
-
-# 특정 즐겨찾기 API
-class SingleFavoriteAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
-
-    def get(self, request, favorite_id):
-        user = request.user  # 요청 사용자
-        favorite = get_object_or_404(Favorites, id=favorite_id, user=user)  # 조회 없으면 404
-        response_data = {
-            "favorite_id": favorite.id,
-            "schedule_id": favorite.schedule.id,
-            "schedule_title": favorite.schedule.title,
-            "schedule_description": favorite.schedule.description,
-        }
-        return Response(response_data, status=status.HTTP_200_OK)  # 결과반환, 상태코드
-
 # 즐겨찾기 생성 및 삭제 API
 class FavoriteAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
