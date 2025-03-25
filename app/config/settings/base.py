@@ -78,7 +78,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://bbangfe.s3-website.ap-northeast-2.amazonaws.com",
     "https://idolsync.kro.kr",
-    "https://seonhm.kr"
+    "https://seonhm.kr",
 ]
 
 
