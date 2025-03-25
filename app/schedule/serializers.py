@@ -60,6 +60,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return super().create(validated_data)
 
+
     def get_is_favorited(self, obj):
         request = self.context.get("request") if self.context else None  # context가 존재하는지 확인
         if not request or not hasattr(request, "user"):

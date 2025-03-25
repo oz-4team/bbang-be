@@ -173,6 +173,7 @@ class ArtistGroupScheduleManageView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)  # 직렬화 데이터 상태코드 반환
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 에러, 상태코드 반환
 
+
     def patch(self, request, schedule_id):
         user = request.user  # 유저정보 가져옴
         if not user.is_staff:  # 권한 없으면 예외처리
