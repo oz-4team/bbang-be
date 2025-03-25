@@ -134,11 +134,12 @@ class AllFavoritesAPIView(APIView):
             favorites = Favorites.objects.filter(user=user)  # 사용자가 즐겨찾기한 모든 일정 조회
             response_data = [
                 {
-                    "favorite_id": favorite.id,  # 즐겨찾기 고유 ID
-                    "schedule_title": favorite.schedule.title,  # 즐겨찾기한 일정 제목
-                    "schedule_description": favorite.schedule.description,  # 일정 설명
+                    "favorite_id": fav.id,
+                    "schedule_id": fav.schedule.id,
+                    "schedule_title": fav.schedule.title,
+                    "schedule_description": fav.schedule.description,
                 }
-                for favorite in favorites
+                for fav in favorites
             ]
             return Response(response_data, status=status.HTTP_200_OK)  # 결과반환, 상태반환
         except Exception as e:
@@ -147,29 +148,6 @@ class AllFavoritesAPIView(APIView):
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-
-# 특정 즐겨찾기 API
-class SingleFavoriteAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
-
-    def get(self, request, favorite_id):
-        try:
-            user = request.user  # 요청 사용자
-            favorite = get_object_or_404(Favorites, id=favorite_id, user=user)  # 조회 없으면 404
-            response_data = {
-                "favorite_id": favorite.id,
-                "schedule_title": favorite.schedule.title,
-                "schedule_description": favorite.schedule.description,
-            }
-            return Response(response_data, status=status.HTTP_200_OK)  # 결과반환, 상태코드
-        except Exception as e:
-            content_error.error(f"Content API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
-            return Response(
-                {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
 
 # 즐겨찾기 생성 및 삭제 API
 class FavoriteAPIView(APIView):
