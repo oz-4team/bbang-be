@@ -26,7 +26,7 @@ class ScheduleListView(APIView):
 
     def get(self, request):
         schedules = Schedule.objects.all()  # 일정 전체 가져오기
-        serializer = ScheduleSerializer(schedules, many=True)  # 직렬화
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
 
@@ -35,7 +35,7 @@ class ArtistScheduleListView(APIView):
 
     def get(self, request, artist_id):
         schedules = Schedule.objects.filter(artist__id=artist_id)  # 아티스트 아이디로 일정 조회
-        serializer = ScheduleSerializer(schedules, many=True)  # 직렬화
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
 
@@ -44,7 +44,7 @@ class ArtistGroupScheduleListView(APIView):
 
     def get(self, request, artist_group_id):
         schedules = Schedule.objects.filter(artist_group__id=artist_group_id)  # 아티스트 그룹 아이디로 일정 조회
-        serializer = ScheduleSerializer(schedules, many=True)  # 직렬화
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
 
@@ -53,7 +53,7 @@ class ScheduleDetailView(APIView):
 
     def get(self, request, schedule_id):
         schedule = get_object_or_404(Schedule, id=schedule_id)  # 일정 아이디로 일정 상세조회 없으면 404
-        serializer = ScheduleSerializer(schedule)  # 직렬화
+        serializer = ScheduleSerializer(schedule, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
 
@@ -64,7 +64,7 @@ class FavoriteSchedulesView(APIView):
         user = request.user  # 유저 정보 가져옴
         favorites = Favorites.objects.filter(user=user)  # 유저가 즐겨찾기한 정보 가져옴
         schedules = [fav.schedule for fav in favorites if fav.schedule]  # 일정 리스트화
-        serializer = ScheduleSerializer(schedules, many=True)  # 직렬화
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
 
@@ -97,7 +97,7 @@ class ArtistScheduleManageView(APIView):
         request.data["artist"] = artist.id  # 아티스트 아이디 가져옴
         request.data["artist_group"] = None  # 아티스트 그룹 None처리
 
-        serializer = ScheduleSerializer(data=request.data)  # 직렬화
+        serializer = ScheduleSerializer(data=request.data, context={"request": request})  # 직렬화
         if serializer.is_valid():  # 유효하면
             schedule = serializer.save()  # 저장
             Notification_likes_schedule_create_send(schedule)
@@ -120,7 +120,7 @@ class ArtistScheduleManageView(APIView):
                 request.data["latitude"] = str(lat)
                 request.data["longitude"] = str(lon)
 
-        serializer = ScheduleSerializer(schedule, data=request.data, partial=True)  # 직렬화
+        serializer = ScheduleSerializer(schedule, data=request.data, partial=True, context={"request": request})  # 직렬화
         if serializer.is_valid():  # 유효하면
             serializer.save()
             Notification_likes_schedule_update_send(schedule)
@@ -166,7 +166,7 @@ class ArtistGroupScheduleManageView(APIView):
         request.data["artist_group"] = artist_group.id
         request.data["artist"] = None
 
-        serializer = ScheduleSerializer(data=request.data)  # 직렬화
+        serializer = ScheduleSerializer(data=request.data, context={"request": request})  # 직렬화
         if serializer.is_valid():  # 유효하면
             schedule = serializer.save()  # 저장
             Notification_likes_schedule_create_send(schedule)
@@ -189,7 +189,7 @@ class ArtistGroupScheduleManageView(APIView):
                 request.data["latitude"] = str(lat)
                 request.data["longitude"] = str(lon)
 
-        serializer = ScheduleSerializer(schedule, data=request.data, partial=True)  # 직렬화
+        serializer = ScheduleSerializer(schedule, data=request.data, partial=True, context={"request": request})  # 직렬화
         if serializer.is_valid():  # 유효하면
             serializer.save()  # 저장
             Notification_likes_schedule_update_send(schedule)

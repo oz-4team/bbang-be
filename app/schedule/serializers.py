@@ -61,7 +61,10 @@ class ScheduleSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def get_is_favorited(self, obj):
-        user = self.context.get("request").user  # 요청한 유저 정보
-        if user.is_anonymous:  # 비로그인 유저는 무조건 false
+        request = self.context.get("request") if self.context else None  # context가 존재하는지 확인
+        if not request or not hasattr(request, "user"):
             return False
-        return Favorites.objects.filter(user=user, schedule=obj).exists()  # 즐겨찾기 여부
+        user = request.user
+        if user.is_anonymous:
+            return False
+        return Favorites.objects.filter(user=user, schedule=obj).exists()
