@@ -31,12 +31,12 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                 group_ids = [g.id for g in artist_groups]
 
                 liked_artist_ids = set(
-                    Likes.objects.filter(user=user, artist_id__in=artist_ids)
-                                .values_list("artist_id", flat=True)
+                    Likes.objects.filter(user=user, artist_id__in=artist_ids).values_list("artist_id", flat=True)
                 )
                 liked_group_ids = set(
-                    Likes.objects.filter(user=user, artist_group_id__in=group_ids)
-                                .values_list("artist_group_id", flat=True)
+                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list(
+                        "artist_group_id", flat=True
+                    )
                 )
 
             # context에 liked IDs를 담아서 전송
@@ -81,8 +81,7 @@ class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
             if user.is_authenticated:
                 artist_ids = [a.id for a in artists]
                 liked_artist_ids = set(
-                    Likes.objects.filter(user=user, artist_id__in=artist_ids)
-                                .values_list("artist_id", flat=True)
+                    Likes.objects.filter(user=user, artist_id__in=artist_ids).values_list("artist_id", flat=True)
                 )
 
             context = {
@@ -109,7 +108,9 @@ class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
             else:
                 data["artist_group"] = None  # 그룹 정보가 없으면 None 설정
 
-            serializer = ArtistSerializer(data=data, context={"request": request})  # 데이터를 ArtistSerializer에 입력하여 검증 준비
+            serializer = ArtistSerializer(
+                data=data, context={"request": request}
+            )  # 데이터를 ArtistSerializer에 입력하여 검증 준비
             if serializer.is_valid():  # 데이터 유효성 검사
                 serializer.save()  # 유효한 경우 저장
                 return Response(
@@ -161,7 +162,9 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
             else:
                 request.data["artist_group"] = None  # 그룹 정보 삭제
 
-            serializer = ArtistSerializer(artist, data=request.data, partial=True, context={"request": request})  # 부분 업데이트를 위한 직렬화
+            serializer = ArtistSerializer(
+                artist, data=request.data, partial=True, context={"request": request}
+            )  # 부분 업데이트를 위한 직렬화
             if serializer.is_valid():  # 유효성 검사
                 serializer.save()  # 변경 사항 저장
                 return Response(serializer.data, status=status.HTTP_200_OK)  # 수정된 데이터를 200 OK 상태와 함께 반환
@@ -212,8 +215,9 @@ class ArtistGroupListView(APIView):
             if user.is_authenticated:
                 group_ids = [g.id for g in artist_groups]
                 liked_group_ids = set(
-                    Likes.objects.filter(user=user, artist_group_id__in=group_ids)
-                                .values_list("artist_group_id", flat=True)
+                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list(
+                        "artist_group_id", flat=True
+                    )
                 )
 
             context = {
@@ -231,7 +235,9 @@ class ArtistGroupListView(APIView):
 
     def post(self, request):
         try:
-            serializer = ArtistGroupSerializer(data=request.data, context={"request": request})  # 입력된 데이터를 직렬화하여 검증 준비
+            serializer = ArtistGroupSerializer(
+                data=request.data, context={"request": request}
+            )  # 입력된 데이터를 직렬화하여 검증 준비
             if serializer.is_valid():  # 데이터 유효성 검사
                 serializer.save()  # 저장
                 return Response(
@@ -245,6 +251,7 @@ class ArtistGroupListView(APIView):
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
 
 class ArtistGroupMemberAddView(APIView):
     permission_classes = [IsAdminUser]
@@ -260,6 +267,7 @@ class ArtistGroupMemberAddView(APIView):
             artist.save()
 
         return Response({"message": "아티스트 멤버가 그룹에 추가되었습니다."}, status=status.HTTP_200_OK)
+
 
 class ArtistGroupMemberCreateView(APIView):
     permission_classes = [IsAdminUser]
@@ -297,9 +305,9 @@ class ArtistGroupMemberDeleteView(APIView):
             return Response({"message": "멤버가 그룹에서 삭제되었습니다."}, status=status.HTTP_200_OK)
         else:
             return Response(
-                {"error": "해당 아티스트는 이 그룹에 속해 있지 않습니다."},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "해당 아티스트는 이 그룹에 속해 있지 않습니다."}, status=status.HTTP_400_BAD_REQUEST
             )
+
 
 class ArtistGroupDetailView(APIView):
 
@@ -316,6 +324,7 @@ class ArtistGroupDetailView(APIView):
         try:
             artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)
             from app.artists.serializers import ArtistGroupDetailSerializer
+
             serializer = ArtistGroupDetailSerializer(artist_group, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -382,5 +391,5 @@ class StaffArtistAndGroupListView(APIView):
                 "artists": artist_serializer.data,
                 "artist_groups": artist_group_serializer.data,
             },
-            status=status.HTTP_200_OK
+            status=status.HTTP_200_OK,
         )

@@ -28,6 +28,7 @@ account_error = logging.getLogger("account")
 #
 # cause_zero_division_error()
 
+
 # 회원가입 API
 class RegisterAPIView(APIView):
     permission_classes = [AllowAny]  # 누구나 접근 가능
@@ -109,10 +110,7 @@ class LoginAPIView(TokenObtainPairView):
                 try:
                     email = request.data["email"]  # KeyError 발생 가능
                 except KeyError:
-                    return Response(
-                        {"error": "이메일이 전달되지 않았습니다."},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
+                    return Response({"error": "이메일이 전달되지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
                 try:
                     user = User.objects.get(email=email)  # DoesNotExist 발생 가능

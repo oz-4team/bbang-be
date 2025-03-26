@@ -284,21 +284,18 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": log_dir / "artist_errors.log",
             "formatter": "verbose",
-
         },
         "schedule_file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": log_dir / "schedule_errors.log",
             "formatter": "verbose",
-
         },
         "content_file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": log_dir / "content_errors.log",
             "formatter": "verbose",
-
         },
     },
     "loggers": {

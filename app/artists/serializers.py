@@ -14,10 +14,7 @@ class ArtistSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
-    group_name = serializers.CharField(
-        source="artist_group.artist_group",  # 실제 그룹 필드명
-        read_only=True
-    )
+    group_name = serializers.CharField(source="artist_group.artist_group", read_only=True)  # 실제 그룹 필드명
     # 아티스트 이미지(image_url)를 Base64 데이터를 받을 수 있도록 정의
     image_url = Base64ImageField(required=False, allow_null=True)
 

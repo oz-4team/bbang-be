@@ -72,6 +72,7 @@ class Likes(BaseModel):
         group_str = str(self.artist_group) if self.artist_group else "No Group"
         return f"{user_str} - {artist_str} - {group_str}"
 
+
 # 즐겨찾기 모델
 class Favorites(BaseModel):
     user = models.ForeignKey(

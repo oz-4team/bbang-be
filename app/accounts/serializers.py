@@ -67,9 +67,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "password", "nickname", "gender", "age", "image_url"]
-        extra_kwargs = {
-            "password": {"write_only": True}  # 비밀번호는 쓰기 전용으로 처리
-        }
+        extra_kwargs = {"password": {"write_only": True}}  # 비밀번호는 쓰기 전용으로 처리
 
     def update(self, instance, validated_data):
         # 요청 데이터에 "password"가 있으면 꺼내어 처리

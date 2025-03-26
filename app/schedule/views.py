@@ -131,7 +131,9 @@ class ArtistScheduleManageView(APIView):
                     request.data["latitude"] = str(lat)
                     request.data["longitude"] = str(lon)
 
-            serializer = ScheduleSerializer(schedule, data=request.data, partial=True, context={"request": request})  # 직렬화
+            serializer = ScheduleSerializer(
+                schedule, data=request.data, partial=True, context={"request": request}
+            )  # 직렬화
             if serializer.is_valid():  # 유효하면
                 serializer.save()
                 Notification_likes_schedule_update_send(schedule)
@@ -214,7 +216,9 @@ class ArtistGroupScheduleManageView(APIView):
                     request.data["latitude"] = str(lat)
                     request.data["longitude"] = str(lon)
 
-            serializer = ScheduleSerializer(schedule, data=request.data, partial=True, context={"request": request})  # 직렬화
+            serializer = ScheduleSerializer(
+                schedule, data=request.data, partial=True, context={"request": request}
+            )  # 직렬화
             if serializer.is_valid():  # 유효하면
                 serializer.save()  # 저장
                 Notification_likes_schedule_update_send(schedule)
@@ -224,7 +228,8 @@ class ArtistGroupScheduleManageView(APIView):
         except Exception as e:
             schedule_error.error(f"Schedule API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
             return Response(
-                {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
     def delete(self, request, schedule_id):
