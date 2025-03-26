@@ -253,7 +253,12 @@ STORAGES = {
         },
     },
 }
+BASE_DIR = Path(__file__).resolve().parent.parent
+log_dir = BASE_DIR / "logs"
 
+# 로그 디렉터리가 존재하지 않으면 생성
+if not log_dir.exists():
+    log_dir.mkdir(parents=True)
 # Logging
 LOGGING = {
     "version": 1,
@@ -266,7 +271,7 @@ LOGGING = {
     },
     "handlers": {
         "account_file": {
-            "level": "ERROR",
+            "level": "DEBUG",
             "class": "logging.FileHandler",
             "filename": log_dir / "account_errors.log",
             "formatter": "verbose",
@@ -276,40 +281,43 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": log_dir / "artist_errors.log",
             "formatter": "verbose",
+
         },
         "schedule_file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": log_dir / "schedule_errors.log",
             "formatter": "verbose",
+
         },
         "content_file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": log_dir / "content_errors.log",
             "formatter": "verbose",
+
         },
     },
     "loggers": {
         "account": {  # Account API 관련 로그
             "handlers": ["account_file"],
             "level": "ERROR",
-            "propagate": False,
+            "propagate": True,
         },
         "artist": {  # Artist API 관련 로그
             "handlers": ["artist_file"],
             "level": "ERROR",
-            "propagate": False,
+            "propagate": True,
         },
         "schedule": {  # Schedule API 관련 로그
             "handlers": ["schedule_file"],
             "level": "ERROR",
-            "propagate": False,
+            "propagate": True,
         },
         "content": {  # Content API 관련 로그
             "handlers": ["schedule_file"],
             "level": "ERROR",
-            "propagate": False,
+            "propagate": True,
         },
     },
 }
