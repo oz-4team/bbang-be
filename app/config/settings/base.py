@@ -270,32 +270,24 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": log_dir / "account_errors.log",
             "formatter": "verbose",
-            "maxBytes": 1024 * 1024 * 5,  # 5MB 이상이면 새로운 파일 생성
-            "backupCount": 5,  # 최대 5개까지 보관
         },
         "artist_file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": log_dir / "artist_errors.log",
             "formatter": "verbose",
-            "maxBytes": 1024 * 1024 * 5,
-            "backupCount": 5,
         },
         "schedule_file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": log_dir / "schedule_errors.log",
             "formatter": "verbose",
-            "maxBytes": 1024 * 1024 * 5,
-            "backupCount": 5,
         },
         "content_file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": log_dir / "content_errors.log",
             "formatter": "verbose",
-            "maxBytes": 1024 * 1024 * 5,
-            "backupCount": 5,
         },
     },
     "loggers": {
