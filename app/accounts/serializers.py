@@ -63,7 +63,17 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 # 사용자 프로필 Serializer
 class ProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User  # CustomUser 모델 (get_user_model()로 가져옴)
-        # 프로필 조회 시, image_url 필드를 포함하여 반환
         fields = ["email", "password", "nickname", "gender", "age", "image_url"]
+
+    def update(self, instance, validated_data):
+        # 새 이미지가 전달되었는지 확인
+        new_image = validated_data.get("image_url", None)
+        if new_image:
+            # 기존 이미지가 있고, 그 이미지가 기본 이미지가 아니라면 S3 저장소에서 삭제
+            if instance.image_url and not instance.image_url.name.endswith("default_profile_image.jpg"):
+                instance.image_url.delete(save=False)
+        # 그 후, 일반 update 진행
+        return super().update(instance, validated_data)
