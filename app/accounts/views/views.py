@@ -101,38 +101,52 @@ class VerifyEmailAPIView(APIView):
 class LoginAPIView(TokenObtainPairView):
     permission_classes = [AllowAny]  # 누구나 접근 가능
 
-    def post(self, request, *args, **kwargs):  # POST
+    def post(self, request, *args, **kwargs):
         try:
-            response = super().post(request, *args, **kwargs)  # JWT 토큰 발급(부모 클래스에서)
-            if response.status_code == 200:  # 토큰 발급 성공 시
-                tokens = response.data  # 발급된 토큰 데이터를 변수에 저장
-                user = User.objects.get(email=request.data["email"])  # 로그인 요청 데이터에서 이메일을 통해 사용자 조회
-                response.set_cookie(  # 쿠키 설정
-                    key="access",  # access 쿠키 이름
-                    value=tokens["access"],  # 토큰 값 저장 (access)
-                    httponly=True,  # 스크립트에서 쿠키에 직접 접근을 막아 xss 공격 방어 도움
-                    secure=True,  # HTTPS 환경에서만 쿠키 전송
-                    samesite="Lax",  # CSRF 보호, 외부 링크 또는 일부 GET요청에도 쿠키 전송 가능
+            response = super().post(request, *args, **kwargs)
+            if response.status_code == 200:
+                tokens = response.data
+                try:
+                    email = request.data["email"]  # KeyError 발생 가능
+                except KeyError:
+                    return Response(
+                        {"error": "이메일이 전달되지 않았습니다."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                try:
+                    user = User.objects.get(email=email)  # DoesNotExist 발생 가능
+                except User.DoesNotExist:
+                    return Response(
+                        {"error": "해당 이메일을 가진 사용자가 존재하지 않습니다."},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+
+                response.set_cookie(
+                    key="access",
+                    value=tokens["access"],
+                    httponly=True,
+                    secure=True,
+                    samesite="Lax",
                 )
                 response.set_cookie(
-                    key="refresh",  # refresh 쿠키 이름
-                    value=tokens["refresh"],  # 토큰 값 저장 (refresh)
+                    key="refresh",
+                    value=tokens["refresh"],
                     httponly=True,
                     samesite="Lax",
                 )
-                # 사용자 정보 추가
                 response.data.update(
                     {
-                        "email": user.email,  # 사용자 이메일 추가
-                        "nickname": user.nickname,  # 사용자 닉네임 추가
-                        "is_staff": user.is_staff,  # 관리자 여부 추가
+                        "email": user.email,
+                        "nickname": user.nickname,
+                        "is_staff": user.is_staff,
                         "image_url": user.image_url.url if user.image_url else None,
                     }
                 )
             return response
 
         except Exception as e:
-            account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
+            account_error.error(f"Account API 에러 발생 {e}", exc_info=True)
             return Response(
                 {"message": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
