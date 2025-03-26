@@ -260,7 +260,7 @@ log_dir = BASE_DIR / "logs"
 if not log_dir.exists():
     log_dir.mkdir(parents=True)
     # 실행 유저가 쓸 수 있도록 권한 설정
-    os.chmod(log_dir, 0o777)
+    # os.chmod(log_dir, 0o777)
 
 # Logging
 LOGGING = {
