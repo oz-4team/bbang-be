@@ -7,7 +7,7 @@ from app.common.models import BaseModel
 class ArtistGroup(BaseModel):
     artist_group = models.CharField("아티스트 그룹", max_length=30, null=True, blank=True)
     artist_agency = models.CharField("소속사", max_length=30, null=True, blank=True)
-    group_insta = models.CharField("인스타그램", max_length=30, null=True, blank=True)
+    group_insta = models.CharField("인스타그램", max_length=100, null=True, blank=True)
     group_fandom = models.CharField("아티스트그룹팬덤", max_length=10, null=True, blank=True)
     debut_date = models.DateField("데뷔 날짜", null=True, blank=True)
     image_url = models.ImageField("그룹 이미지", upload_to="artist_groups/", null=True, blank=True)
