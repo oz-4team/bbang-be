@@ -73,19 +73,32 @@ class GoogleOAuthCallbackView(APIView):
 
             refresh = RefreshToken.for_user(user)
 
-            return JsonResponse(
-                {
-                    "message": "구글 로그인 성공",
-                    "created_new_user": created,
-                    "email": user.email,
-                    "nickname": user.nickname,
-                    "gender": user.gender,
-                    "image_url": str(user.image_url),
-                    "access_token": str(refresh.access_token),
-                    "refresh_token": str(refresh),
-                    "is_staff": user.is_staff,
-                }
-            )
+            res_data = {
+                "message": "구글 로그인 성공",
+                "created_new_user": created,
+                "id": user.id,
+                "email": user.email,
+                "nickname": user.nickname,
+                "gender": user.gender,
+                "image_url": str(user.image_url),
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh),
+                "is_staff": user.is_staff,
+            }
+
+            if user.is_staff:
+                artist_ids = list(
+                    user.created_artists.values_list("id", flat=True)
+                )
+                group_ids = list(
+                    user.created_groups.values_list("id", flat=True)
+                )
+                res_data.update({
+                    "artist_id": artist_ids,
+                    "group_ids": group_ids,
+                })
+
+            return JsonResponse(res_data)
 
         except Exception as e:
             account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
@@ -149,19 +162,32 @@ class KakaoOAuthCallbackView(APIView):
 
             refresh = RefreshToken.for_user(user)
 
-            return JsonResponse(
-                {
-                    "message": "카카오 로그인 성공",
-                    "created_new_user": created,
-                    "email": user.email,
-                    "nickname": user.nickname,
-                    "gender": user.gender,
-                    "image_url": str(user.image_url),
-                    "access_token": str(refresh.access_token),
-                    "refresh_token": str(refresh),
-                    "is_staff": user.is_staff,
-                }
-            )
+            res_data = {
+                "message": "카카오 로그인 성공",
+                "created_new_user": created,
+                "id": user.id,
+                "email": user.email,
+                "nickname": user.nickname,
+                "gender": user.gender,
+                "image_url": str(user.image_url),
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh),
+                "is_staff": user.is_staff,
+            }
+
+            if user.is_staff:
+                artist_ids = list(
+                    user.created_artists.values_list("id", flat=True)
+                )
+                group_ids = list(
+                    user.created_groups.values_list("id", flat=True)
+                )
+                res_data.update({
+                    "artist_id": artist_ids,
+                    "group_ids": group_ids,
+                })
+
+            return JsonResponse(res_data)
 
         except Exception as e:
             account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
@@ -226,19 +252,32 @@ class NaverOAuthCallbackView(APIView):
 
             refresh = RefreshToken.for_user(user)
 
-            return JsonResponse(
-                {
-                    "message": "네이버 로그인 성공",
-                    "created_new_user": created,
-                    "email": user.email,
-                    "nickname": user.nickname,
-                    "gender": user.gender,
-                    "image_url": str(user.image_url),
-                    "access_token": str(refresh.access_token),
-                    "refresh_token": str(refresh),
-                    "is_staff": user.is_staff,
-                }
-            )
+            res_data = {
+                "message": "네이버 로그인 성공",
+                "created_new_user": created,
+                "id": user.id,
+                "email": user.email,
+                "nickname": user.nickname,
+                "gender": user.gender,
+                "image_url": str(user.image_url),
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh),
+                "is_staff": user.is_staff,
+            }
+
+            if user.is_staff:
+                artist_ids = list(
+                    user.created_artists.values_list("id", flat=True)
+                )
+                group_ids = list(
+                    user.created_groups.values_list("id", flat=True)
+                )
+                res_data.update({
+                    "artist_id": artist_ids,
+                    "group_ids": group_ids,
+                })
+
+            return JsonResponse(res_data)
 
         except Exception as e:
             account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장

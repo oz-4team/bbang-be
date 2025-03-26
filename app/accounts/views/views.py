@@ -11,22 +11,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from app.accounts.email import send_password_reset_email
 from app.accounts.serializers import ProfileSerializer, RegisterSerializer
+from app.accounts.views.oauthviews import account_error
 
 User = get_user_model()
-account_error = logging.getLogger("account")
-
-# # log test
-# def cause_zero_division_error():
-#     try:
-#         return 1 / 0
-#     except Exception as e:
-#         account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
-#         return Response(
-#             {"message": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
-#             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#         )
-#
-# cause_zero_division_error()
 
 # 회원가입 API
 class RegisterAPIView(APIView):
@@ -128,8 +115,10 @@ class LoginAPIView(TokenObtainPairView):
                     group_ids = list(
                         user.created_groups.values_list("id", flat=True)
                     )
-                    response.data["artist_ids"] = artist_ids
-                    response.data["group_ids"] = group_ids
+                    response.data.update({
+                        "artist_id": artist_ids,
+                        "group_ids": group_ids,
+                    })
 
                 response.set_cookie(
                     key="access",
@@ -146,12 +135,11 @@ class LoginAPIView(TokenObtainPairView):
                 )
                 response.data.update(
                     {
+                        "id": user.id,
                         "email": user.email,
                         "nickname": user.nickname,
                         "is_staff": user.is_staff,
                         "image_url": user.image_url.url if user.image_url else None,
-                        "artist_id": user.artist_ids,
-                        "group_id": user.group_ids,
                     }
                 )
             return response
