@@ -2,9 +2,11 @@ from drf_extra_fields.fields import Base64ImageField  # Base64 인코딩 이미�
 from rest_framework import serializers
 
 from app.artists.models import Artist, ArtistGroup
+from app.content.models import Likes
 
 
 class ArtistGroupSerializer(serializers.ModelSerializer):
+    is_liked = serializers.SerializerMethodField()  # 좋아요 여부
     # 그룹 이미지(image_url)를 Base64 형식의 데이터를 받을 수 있도록 정의
     image_url = Base64ImageField(required=False, allow_null=True)
 
@@ -12,8 +14,17 @@ class ArtistGroupSerializer(serializers.ModelSerializer):
         model = ArtistGroup
         fields = "__all__"
 
+    def get_is_liked(self, obj):
+        """현재 user가 이 아티스트그룹을 좋아요했는지 여부"""
+        request = self.context.get("request")
+        if not request or not request.user or not request.user.is_authenticated:
+            return False
+        return Likes.objects.filter(user=request.user,artist_group=obj).exists()
+
+
 
 class ArtistSerializer(serializers.ModelSerializer):
+    is_liked = serializers.SerializerMethodField()  # 좋아요 여부
     artist_group = ArtistGroupSerializer(read_only=True)
     artist_group_id = serializers.PrimaryKeyRelatedField(
         queryset=ArtistGroup.objects.all(),
@@ -28,3 +39,11 @@ class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
         fields = "__all__"
+
+    def get_is_liked(self, obj):
+        """현재 user가 이 아티스트를 좋아요했는지 여부"""
+        request = self.context.get("request")
+        if not request or not request.user or not request.user.is_authenticated:
+            return False
+        user = request.user
+        return Likes.objects.filter(user=user, artist=obj).exists()
