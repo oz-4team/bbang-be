@@ -32,7 +32,7 @@ class Artist(BaseModel):
     artist_name = models.CharField("이름", max_length=30, default="Unknown")
     artist_group = models.ForeignKey(ArtistGroup, on_delete=models.CASCADE, null=True, blank=True, related_name="members")
     artist_agency = models.CharField("소속사", max_length=30, null=True, blank=True)
-    artist_insta = models.CharField("인스타그램", max_length=30, null=True, blank=True)
+    artist_insta = models.CharField("인스타그램", max_length=100, null=True, blank=True)
     artist_fandom = models.CharField("아티스트팬덤", max_length=10, null=True, blank=True)
     debut_date = models.DateField("데뷔 날짜", null=True, blank=True)
 
