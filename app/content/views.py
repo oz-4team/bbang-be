@@ -177,15 +177,16 @@ class FavoriteAPIView(APIView):
 
     def delete(self, request):
         try:
-            favorite_id = request.data.get("favorite_id")  # 아이디 추출
-            if not favorite_id:
-                return Response(  # 없으면 예외처리
-                    {"error": "삭제할 즐겨찾기 ID가 필요합니다."},
+            user = request.user
+            schedule_id = request.data.get("schedule_id")
+            if not schedule_id:
+                return Response(
+                    {"error": "삭제할 일정 ID가 필요합니다."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            favorite = get_object_or_404(Favorites, id=favorite_id, user=request.user)  # 조회
-            favorite.delete()  # 삭제
-            return Response({"message": "즐겨찾기가 삭제되었습니다."}, status=status.HTTP_200_OK)  # 메세지 상태코드
+            favorite = get_object_or_404(Favorites, user=user, schedule__id=schedule_id)
+            favorite.delete()
+            return Response({"message": "즐겨찾기가 삭제되었습니다."}, status=status.HTTP_200_OK)
         except Exception as e:
             content_error.error(f"Content API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
             return Response(
