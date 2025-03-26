@@ -271,7 +271,7 @@ LOGGING = {
     },
     "handlers": {
         "account_file": {
-            "level": "DEBUG",
+            "level": "ERROR",
             "class": "logging.FileHandler",
             "filename": log_dir / "account_errors.log",
             "formatter": "verbose",
