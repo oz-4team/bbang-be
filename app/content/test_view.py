@@ -60,5 +60,5 @@ class LikeFavoriteAPITests(TestCase):
         self.assertEqual(len(response.data), 1)
 
         # 즐겨찾기 삭제
-        response = self.client.delete("/favorite/", {"favorite_id": favorite_id}, format="json")
+        response = self.client.delete("/favorite/", {"schedule_id": self.schedule.id}, format="json")
         self.assertEqual(response.status_code, 200)
