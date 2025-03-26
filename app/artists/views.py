@@ -246,6 +246,60 @@ class ArtistGroupListView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+class ArtistGroupMemberAddView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, group_id):
+        artist_group = get_object_or_404(ArtistGroup, id=group_id)
+        artist_ids = request.data.get("artist_ids")
+        if not artist_ids:
+            return Response({"error": "artist_ids가 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
+        artists = Artist.objects.filter(id__in=artist_ids)
+        for artist in artists:
+            artist.artist_group = artist_group
+            artist.save()
+
+        return Response({"message": "아티스트 멤버가 그룹에 추가되었습니다."}, status=status.HTTP_200_OK)
+
+class ArtistGroupMemberCreateView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, group_id):
+        artist_group = get_object_or_404(ArtistGroup, id=group_id)
+        members_data = request.data.get("members")
+        if not members_data:
+            return Response({"error": "members 필드가 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_artists = []
+        for member_data in members_data:
+            member_data["artist_group"] = artist_group.id
+            serializer = ArtistSerializer(data=member_data)
+            if serializer.is_valid():
+                artist = serializer.save()
+                created_artists.append(artist)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        result = ArtistSerializer(created_artists, many=True).data
+        return Response({"created_members": result}, status=status.HTTP_201_CREATED)
+
+
+class ArtistGroupMemberDeleteView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, group_id, artist_id):
+        artist_group = get_object_or_404(ArtistGroup, id=group_id)
+        artist = get_object_or_404(Artist, id=artist_id)
+
+        if artist.artist_group and artist.artist_group.id == artist_group.id:
+            artist.artist_group = None  # 소속 해제
+            artist.save()
+            return Response({"message": "멤버가 그룹에서 삭제되었습니다."}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "해당 아티스트는 이 그룹에 속해 있지 않습니다."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 class ArtistGroupDetailView(APIView):
 

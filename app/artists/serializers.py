@@ -5,33 +5,18 @@ from app.artists.models import Artist, ArtistGroup
 from app.content.models import Likes
 
 
-class ArtistGroupSerializer(serializers.ModelSerializer):
-    is_liked = serializers.SerializerMethodField()  # 좋아요 여부
-    # 그룹 이미지(image_url)를 Base64 형식의 데이터를 받을 수 있도록 정의
-    image_url = Base64ImageField(required=False, allow_null=True)
-
-    class Meta:
-        model = ArtistGroup
-        fields = "__all__"
-
-    def get_is_liked(self, obj):
-        """현재 user가 이 아티스트그룹을 좋아요했는지 여부"""
-        request = self.context.get("request")
-        if not request or not request.user or not request.user.is_authenticated:
-            return False
-        return Likes.objects.filter(user=request.user,artist_group=obj).exists()
-
-
-
 class ArtistSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()  # 좋아요 여부
-    artist_group = ArtistGroupSerializer(read_only=True)
     artist_group_id = serializers.PrimaryKeyRelatedField(
         queryset=ArtistGroup.objects.all(),
         source="artist_group",
         write_only=True,
         required=False,
         allow_null=True,
+    )
+    group_name = serializers.CharField(
+        source="artist_group.artist_group",  # 실제 그룹 필드명
+        read_only=True
     )
     # 아티스트 이미지(image_url)를 Base64 데이터를 받을 수 있도록 정의
     image_url = Base64ImageField(required=False, allow_null=True)
@@ -47,3 +32,21 @@ class ArtistSerializer(serializers.ModelSerializer):
             return False
         user = request.user
         return Likes.objects.filter(user=user, artist=obj).exists()
+
+
+class ArtistGroupSerializer(serializers.ModelSerializer):
+    members = ArtistSerializer(many=True, read_only=True)
+    is_liked = serializers.SerializerMethodField()  # 좋아요 여부
+    # 그룹 이미지(image_url)를 Base64 형식의 데이터를 받을 수 있도록 정의
+    image_url = Base64ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = ArtistGroup
+        fields = "__all__"
+
+    def get_is_liked(self, obj):
+        """현재 user가 이 아티스트그룹을 좋아요했는지 여부"""
+        request = self.context.get("request")
+        if not request or not request.user or not request.user.is_authenticated:
+            return False
+        return Likes.objects.filter(user=request.user, artist_group=obj).exists()
