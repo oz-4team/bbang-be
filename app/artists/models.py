@@ -10,6 +10,13 @@ class ArtistGroup(BaseModel):
     group_insta = models.CharField("인스타그램", max_length=30, null=True, blank=True)
     image_url = models.ImageField("그룹 이미지", upload_to="artist_groups/", null=True, blank=True)
     # image -> image_url 로 변경
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="created_groups"
+    )
 
     class Meta:
         verbose_name = "아티스트 그룹"
@@ -26,6 +33,13 @@ class Artist(BaseModel):
     artist_insta = models.CharField("인스타그램", max_length=30, null=True, blank=True)
     image_url = models.ImageField("아티스트 이미지", upload_to="artists/", null=True, blank=True)
     # image -> image_url 로 변경
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="created_artists"
+    )
 
     class Meta:
         verbose_name = "아티스트"

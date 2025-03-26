@@ -305,3 +305,29 @@ class ArtistGroupDetailView(APIView):
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+class StaffArtistAndGroupListView(APIView):
+    permission_classes = [IsAdminUser]  # Only authenticated users can access
+
+    def get(self, request):
+        user = request.user
+        # 만약 staff가 아니면 403 반환
+        if not user.is_staff:
+            return Response({"error": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+
+        # staff가 생성한 아티스트/아티스트그룹 필터링
+        artists = Artist.objects.filter(created_by=user)
+        artist_groups = ArtistGroup.objects.filter(created_by=user)
+
+        # 직렬화
+        artist_serializer = ArtistSerializer(artists, many=True, context={"request": request})
+        artist_group_serializer = ArtistGroupSerializer(artist_groups, many=True, context={"request": request})
+
+        return Response(
+            {
+                "artists": artist_serializer.data,
+                "artist_groups": artist_group_serializer.data,
+            },
+            status=status.HTTP_200_OK
+        )

@@ -5,7 +5,7 @@ from app.artists.views import (
     ArtistDetailView,
     ArtistGroupDetailView,
     ArtistGroupListView,
-    ArtistListView,
+    ArtistListView, StaffArtistAndGroupListView,
 )
 
 urlpatterns = [
@@ -14,4 +14,5 @@ urlpatterns = [
     path("artists/<int:artist_id>/", ArtistDetailView.as_view(), name="artist-detail"),
     path("artist-groups/", ArtistGroupListView.as_view(), name="artist-group-list"),
     path("artist-groups/<int:artist_group_id>/", ArtistGroupDetailView.as_view(), name="artist-group-detail"),
+    path("staff/artist-and-groups/", StaffArtistAndGroupListView.as_view(), name="staff-artists-and-group-list"),
 ]
