@@ -137,7 +137,7 @@ class LoginAPIView(TokenObtainPairView):
                 )
                 response.data.update(
                     {
-                        "user_id": user.id,
+                        "id": user.id,
                         "email": user.email,
                         "nickname": user.nickname,
                         "is_staff": user.is_staff,
