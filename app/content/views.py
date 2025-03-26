@@ -163,6 +163,12 @@ class FavoriteAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             schedule = get_object_or_404(Schedule, id=schedule_id)  # 조회 없으면 404
+            # 이미 즐겨찾기가 존재하는지 체크
+            if Favorites.objects.filter(user=user, schedule=schedule).exists():
+                return Response(
+                    {"error": "이미 해당 일정에 대한 즐겨찾기가 등록되어 있습니다."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             favorite = Favorites.objects.create(user=user, schedule=schedule)  # 즐겨찾기 생성
             return Response(  # 메세지 상태코드
                 {"message": "즐겨찾기가 생성되었습니다.", "favorite_id": favorite.id},
