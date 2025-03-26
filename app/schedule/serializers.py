@@ -63,18 +63,12 @@ class ScheduleSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         request = self.context.get("request") if self.context else None
         if not request or not hasattr(request, "user"):
-            print(f"[DEBUG] Schedule={obj.id}, request 없음")
             return False
 
         user = request.user
         if user.is_anonymous:
-            print(f"[DEBUG] Schedule={obj.id}, user=AnonymousUser")
             return False
 
         # DB 조회
         exists = Favorites.objects.filter(user=user, schedule=obj).exists()
-        print(
-            f"[DEBUG] Schedule={obj.id}, user_id={user.id}, "
-            f"user_email={user.email}, is_favorited={exists}"
-        )
         return exists
