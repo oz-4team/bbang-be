@@ -121,6 +121,15 @@ class LoginAPIView(TokenObtainPairView):
                         {"error": "해당 이메일을 가진 사용자가 존재하지 않습니다."},
                         status=status.HTTP_404_NOT_FOUND,
                     )
+                if user.is_staff:
+                    artist_ids = list(
+                        user.created_artists.values_list("id", flat=True)
+                    )
+                    group_ids = list(
+                        user.created_groups.values_list("id", flat=True)
+                    )
+                    response.data["artist_ids"] = artist_ids
+                    response.data["group_ids"] = group_ids
 
                 response.set_cookie(
                     key="access",
@@ -141,6 +150,8 @@ class LoginAPIView(TokenObtainPairView):
                         "nickname": user.nickname,
                         "is_staff": user.is_staff,
                         "image_url": user.image_url.url if user.image_url else None,
+                        "artist_id": user.artist_ids,
+                        "group_id": user.group_ids,
                     }
                 )
             return response

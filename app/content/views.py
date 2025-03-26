@@ -2,7 +2,7 @@ import logging
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -322,7 +322,7 @@ class AdvertisementManageAPIView(APIView):
 
 class StaffUpAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인 사용자만 접근 가능
-    parser_classes = (MultiPartParser, FormParser)  # 이미지 업로드 지원
+    parser_classes = (MultiPartParser, FormParser, JSONParser)  # 이미지 업로드 지원
 
     def post(self, request):
         try:
@@ -333,8 +333,9 @@ class StaffUpAPIView(APIView):
             artist_name = data.get("artistName")  # 아티스트 이름
             agency = data.get("artist_agency")  # 소속사
             phone = data.get("phone_number")  # 전화번호
+            image_url = data.get("image_url")  # 이미지 URL
 
-            if not artist_name or not agency or not phone:
+            if not artist_name or not agency or not phone or not image_url:
                 return Response(  # 셋중 하나라도 없으면 예외처리
                     {"error": "필수 항목이 누락되었습니다."},
                     status=status.HTTP_400_BAD_REQUEST,
