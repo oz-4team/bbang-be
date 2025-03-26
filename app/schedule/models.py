@@ -31,4 +31,4 @@ class Schedule(BaseModel):
         verbose_name_plural = "일정 목록"
 
     def __str__(self):
-        return self.title
+        return self.title or "No Title"

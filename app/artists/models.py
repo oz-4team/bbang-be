@@ -15,7 +15,7 @@ class ArtistGroup(BaseModel):
         verbose_name_plural = "아티스트 그룹 목록"
 
     def __str__(self):
-        return self.artist_group
+        return self.artist_group or "No Name"
 
 
 class Artist(BaseModel):
@@ -31,4 +31,4 @@ class Artist(BaseModel):
         verbose_name_plural = "아티스트 목록"
 
     def __str__(self):
-        return self.artist_name
+        return self.artist_name or "No Name"

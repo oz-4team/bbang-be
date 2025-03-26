@@ -67,10 +67,10 @@ class Likes(BaseModel):
             raise ValidationError("아티스트 또는 아티스트 그룹 중 하나는 반드시 필요합니다.")
 
     def __str__(self):
+        user_str = str(self.user) if self.user else "No User"
         artist_str = str(self.artist) if self.artist else "No Artist"
         group_str = str(self.artist_group) if self.artist_group else "No Group"
-        return f"{self.user} - {artist_str} - {group_str}"
-
+        return f"{user_str} - {artist_str} - {group_str}"
 
 # 즐겨찾기 모델
 class Favorites(BaseModel):
