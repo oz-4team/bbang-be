@@ -259,6 +259,9 @@ log_dir = BASE_DIR / "logs"
 # 로그 디렉터리가 존재하지 않으면 생성
 if not log_dir.exists():
     log_dir.mkdir(parents=True)
+    # 실행 유저가 쓸 수 있도록 권한 설정
+    os.chmod(log_dir, 0o777)
+
 # Logging
 LOGGING = {
     "version": 1,
@@ -321,5 +324,3 @@ LOGGING = {
         },
     },
 }
-# 실행 유저가 쓸 수 있도록 권한 설정
-os.chmod(log_dir, 0o777)
