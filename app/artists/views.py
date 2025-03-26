@@ -305,21 +305,20 @@ class ArtistGroupDetailView(APIView):
 
     def get_permissions(self):
         try:
-            if self.request.method == "GET":  # method가 get이면 인증된 사용자만 접근 가능하게 권한 수정
+            if self.request.method == "GET":  # method가 get이면 인증된 사용자만 접근 가능
                 return [IsAuthenticated()]
             return [IsAdminUser()]
         except Exception as e:
-            artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
-            return Response(
-                {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+            # 로깅 처리 ...
+            return [IsAdminUser()]  # fallback
 
     def get(self, request, artist_group_id):
         try:
-            artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)  # 조회할 그룹 아티스트 조회
-            serializer = ArtistGroupSerializer(artist_group, context={"request": request})  # 데이터를 직렬화
-            return Response(serializer.data, status=status.HTTP_200_OK)  # 200 OK 상태와 함께 데이터를 반환
+            artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)
+            from app.artists.serializers import ArtistGroupDetailSerializer
+            serializer = ArtistGroupDetailSerializer(artist_group, context={"request": request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
         except Exception as e:
             artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
             return Response(

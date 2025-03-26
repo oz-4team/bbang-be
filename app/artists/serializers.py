@@ -50,3 +50,28 @@ class ArtistGroupSerializer(serializers.ModelSerializer):
         if not request or not request.user or not request.user.is_authenticated:
             return False
         return Likes.objects.filter(user=request.user, artist_group=obj).exists()
+
+
+class ArtistGroupDetailSerializer(serializers.ModelSerializer):
+    # ArtistGroup 모델의 related_name="members"로 연결된 Artist 목록
+    members = ArtistSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ArtistGroup
+        fields = (
+            "id",
+            "artist_group",
+            "artist_agency",
+            "group_insta",
+            "group_fandom",
+            "debut_date",
+            "image_url",
+            "members",
+        )
+
+    def get_is_liked(self, obj):
+        """현재 user가 이 아티스트그룹을 좋아요했는지 여부"""
+        request = self.context.get("request")
+        if not request or not request.user or not request.user.is_authenticated:
+            return False
+        return Likes.objects.filter(user=request.user, artist_group=obj).exists()
