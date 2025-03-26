@@ -107,12 +107,6 @@ class ArtistScheduleManageView(APIView):
                 Notification_likes_schedule_create_send(schedule)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)  # 직렬화 데이터 상태코드 반환
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 에러, 상태코드 반환
-            serializer = ScheduleSerializer(data=request.data)  # 직렬화
-            if serializer.is_valid():  # 유효하면
-                schedule = serializer.save()  # 저장
-                Notification_likes_schedule_create_send(schedule)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)  # 직렬화 데이터 상태코드 반환
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 에러, 상태코드 반환
         except Exception as e:
             schedule_error.error(f"Schedule API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
             return Response(
