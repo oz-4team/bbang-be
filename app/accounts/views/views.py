@@ -206,21 +206,19 @@ class UserProfileAPIView(APIView):
             user = self.get_object()  # 현재 사용자 가져오기
             data = request.data.copy()  # 요청 데이터를 복사하여 수정 가능하도록 함
 
-            # 비밀번호가 포함되어 있다면, 데이터를 분리하여 설정
-            if "password" in data:
-                password = data.pop("password")  # password는 serializer에서 처리하지 않으므로 분리
-                user.set_password(password)  # 비밀번호 해시화 적용
+            # 만약 요청 데이터에 "password" 필드가 포함되어 있다면
+            if "password" in data:  # 비밀번호 재설정시 해시화
+                user.set_password(data["password"])  # 비밀번호 해시화 적용
+                user.save()  # 변경된 비밀번호 저장
 
-            # 나머지 프로필 정보를 업데이트 (부분 업데이트)
-            serializer = ProfileSerializer(user, data=data, partial=True)
-            if serializer.is_valid():
-                serializer.save()  # 프로필 정보 저장
-                user.save()  # 비밀번호 변경 사항 포함하여 최종 저장
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = ProfileSerializer(user, data=data, partial=True)  # 일반적인 사용자 정보 업데이트
+            if serializer.is_valid():  # 데이터 유효성 검사
+                serializer.save()  # 변경사항 저장
+                return Response(serializer.data, status=status.HTTP_200_OK)  # 수정된 데이터 응답 반환
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 유효하지 않으면 오류 반환
 
         except Exception as e:
-            account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # 예외 발생 위치 기록
+            account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
             return Response(
                 {"message": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
