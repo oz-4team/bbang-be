@@ -206,11 +206,6 @@ class UserProfileAPIView(APIView):
             user = self.get_object()  # 현재 사용자 가져오기
             data = request.data.copy()  # 요청 데이터를 복사하여 수정 가능하도록 함
 
-            # 만약 요청 데이터에 "password" 필드가 포함되어 있다면
-            if "password" in data:  # 비밀번호 재설정시 해시화
-                user.set_password(data["password"])  # 비밀번호 해시화 적용
-                user.save()  # 변경된 비밀번호 저장
-
             serializer = ProfileSerializer(user, data=data, partial=True)  # 일반적인 사용자 정보 업데이트
             if serializer.is_valid():  # 데이터 유효성 검사
                 serializer.save()  # 변경사항 저장

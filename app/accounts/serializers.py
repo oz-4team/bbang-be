@@ -65,15 +65,19 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User  # CustomUser 모델 (get_user_model()로 가져옴)
+        model = User
         fields = ["email", "password", "nickname", "gender", "age", "image_url"]
+        extra_kwargs = {
+            "password": {"write_only": True}  # 비밀번호는 쓰기 전용으로 처리
+        }
 
     def update(self, instance, validated_data):
-        # 새 이미지가 전달되었는지 확인
-        new_image = validated_data.get("image_url", None)
-        if new_image:
-            # 기존 이미지가 있고, 그 이미지가 기본 이미지가 아니라면 S3 저장소에서 삭제
-            if instance.image_url and not instance.image_url.name.endswith("default_profile_image.jpg"):
-                instance.image_url.delete(save=False)
-        # 그 후, 일반 update 진행
-        return super().update(instance, validated_data)
+        # 요청 데이터에 "password"가 있으면 꺼내어 처리
+        password = validated_data.pop("password", None)
+        if password:
+            instance.set_password(password)  # 비밀번호 해시화 적용
+        # 나머지 필드 업데이트 (예: nickname, gender, age, image_url)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()  # 변경사항 저장
+        return instance
