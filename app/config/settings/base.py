@@ -133,17 +133,6 @@ DATABASES = {
 #     }
 # }
 
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'description': 'JWT Authorization header using the Bearer scheme. Example: "Authorization: Bearer {token}"',
-            'name': 'Authorization',   # HTTP 헤더의 이름
-            'in': 'header'
-        }
-    }
-}
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
