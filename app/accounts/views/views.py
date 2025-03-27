@@ -17,18 +17,18 @@ from app.accounts.serializers import ProfileSerializer, RegisterSerializer
 User = get_user_model()
 account_error = logging.getLogger("account")
 
-# # log test
-# def cause_zero_division_error():
-#     try:
-#         return 1 / 0
-#     except Exception as e:
-#         account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
-#         return Response(
-#             {"message": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
-#             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#         )
-#
-# cause_zero_division_error()
+# log test
+def cause_zero_division_error():
+    try:
+        return 1 / 0
+    except Exception as e:
+        account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
+        return Response(
+            {"message": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+cause_zero_division_error()
 
 
 # 회원가입 API

@@ -58,6 +58,17 @@ class ScheduleDetailView(APIView):
         serializer = ScheduleSerializer(schedule, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class FavoriteSchedulesView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 사용자
+
+    def get(self, request):
+        user = request.user  # 유저 정보 가져옴
+        favorites = Favorites.objects.filter(user=user)  # 유저가 즐겨찾기한 정보 가져옴
+        schedules = [fav.schedule for fav in favorites if fav.schedule]  # 일정 리스트화
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
+        return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
+
+
 
 class ArtistScheduleManageView(APIView):
     permission_classes = [IsAdminUser]
