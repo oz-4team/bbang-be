@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 from app.accounts.email import send_password_reset_email
 from app.accounts.serializers import ProfileSerializer, RegisterSerializer
@@ -33,6 +36,10 @@ account_error = logging.getLogger("account")
 class RegisterAPIView(APIView):
     permission_classes = [AllowAny]  # 누구나 접근 가능
 
+    @swagger_auto_schema(
+        request_body=RegisterSerializer,  # 요청 바디 명시
+        responses={201: openapi.Response("회원가입 성공", RegisterSerializer)}
+    )
     def post(self, request):  # POST
         try:
             serializer = RegisterSerializer(data=request.data)  # 요청 데이터를 RegisterSerializer에 삽입
@@ -102,6 +109,17 @@ class VerifyEmailAPIView(APIView):
 class LoginAPIView(TokenObtainPairView):
     permission_classes = [AllowAny]  # 누구나 접근 가능
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "email": openapi.Schema(type=openapi.TYPE_STRING, description="사용자 이메일"),
+                "password": openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호"),
+            },
+            required=["email", "password"],
+        )
+    )
+
     def post(self, request, *args, **kwargs):
         try:
             response = super().post(request, *args, **kwargs)
@@ -156,6 +174,15 @@ class LoginAPIView(TokenObtainPairView):
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근가능
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "refresh": openapi.Schema(type=openapi.TYPE_STRING, description="JWT 리프레시 토큰"),
+            },
+            required=["refresh"],
+        )
+    )
     def post(self, request):
         try:
             refresh_token = request.data["refresh"]  # 클라이언트로부터 받은 토큰 추출
@@ -199,6 +226,9 @@ class UserProfileAPIView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        request_body=ProfileSerializer
+    )
     def patch(self, request, *args, **kwargs):  # PATCH.
         try:
             user = self.get_object()  # 현재 사용자 가져오기

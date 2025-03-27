@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_extra_fields.fields import Base64ImageField  # for handling Base64 encoded image fields
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from app.artists.models import Artist, ArtistGroup
 from app.content.models import (  # 권한 신청 모델 import
