@@ -1,9 +1,11 @@
 import logging
 
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework import status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_extra_fields.fields import Base64ImageField
@@ -24,6 +26,21 @@ content_error = logging.getLogger("content")
 class AllLikesAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
 
+    @swagger_auto_schema(
+        operation_summary="전체 좋아요 조회",
+        operation_description="요청한 사용자가 생성한 모든 좋아요를 조회",
+        responses={
+            200: openapi.Response(
+                description="좋아요 조회 성공",
+                examples={
+                    "application/json": [
+                        {"like_id": 1, "artist": "아티스트 이름", "artist_group": "그룹명"}
+                    ]
+                }
+            ),
+            500: "서버 오류"
+        }
+    )
     def get(self, request):
         try:
             user = request.user  # 요청한 사용자 정보 가져오기
@@ -50,6 +67,23 @@ class AllLikesAPIView(APIView):
 class SingleLikeAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
 
+    @swagger_auto_schema(
+        operation_summary="단건 좋아요 조회",
+        operation_description="요청한 사용자가 생성한 특정 좋아요를 단건 조회",
+        responses={
+            200: openapi.Response(
+                description="단건 좋아요 조회 성공",
+                examples={
+                    "application/json": {
+                        "like_id": 1,
+                        "artist": "아티스트 이름",
+                        "artist_group": "그룹명"
+                    }
+                }
+            ),
+            500: "서버 오류"
+        }
+    )
     def get(self, request, like_id):
         try:
             user = request.user  # 요청 사용자
@@ -71,6 +105,27 @@ class SingleLikeAPIView(APIView):
 # 좋아요 생성 및 삭제 API
 class LikeAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
+
+    @swagger_auto_schema(
+        operation_summary="좋아요 생성",
+        operation_description="요청한 사용자가 아티스트나 아티스트 그룹에 좋아요를 생성",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "artist_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="아티스트 ID"),
+                "artist_group_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="아티스트 그룹 ID")
+            },
+            required=[],
+        ),
+        responses={
+            201: openapi.Response(
+                description="좋아요 생성 성공",
+                examples={"application/json": {"message": "좋아요가 생성되었습니다.", "like_id": 1}}
+            ),
+            400: "아티스트 또는 아티스트 그룹 선택 누락",
+            500: "서버 오류"
+        }
+    )
 
     def post(self, request):
         try:
@@ -105,6 +160,25 @@ class LikeAPIView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        operation_summary="좋아요 삭제",
+        operation_description="요청한 사용자의 좋아요를 삭제",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "like_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="삭제할 좋아요 ID")
+            },
+            required=["like_id"],
+        ),
+        responses={
+            200: openapi.Response(
+                description="좋아요 삭제 성공",
+                examples={"application/json": {"message": "좋아요가 삭제되었습니다."}}
+            ),
+            400: "삭제할 좋아요 ID 누락",
+            500: "서버 오류"
+        }
+    )
     def delete(self, request):
         try:
             # 좋아요 삭제를 위한 ID를 요청 데이터에서 가져옴
@@ -129,6 +203,19 @@ class LikeAPIView(APIView):
 class AllFavoritesAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
 
+    @swagger_auto_schema(
+        operation_summary="전체 즐겨찾기 조회",
+        operation_description="요청한 사용자가 즐겨찾기한 모든 일정을 조회",
+        responses={
+            200: openapi.Response(
+                description="즐겨찾기 일정 조회 성공",
+                examples={"application/json": [
+                    {"favorite_id": 1, "schedule_id": 10, "schedule_title": "일정 제목", "schedule_description": "일정 설명"}
+                ]}
+            ),
+            500: "서버 오류"
+        }
+    )
     def get(self, request):
         try:
             user = request.user  # 요청 사용자
@@ -155,6 +242,25 @@ class AllFavoritesAPIView(APIView):
 class FavoriteAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
 
+    @swagger_auto_schema(
+        operation_summary="즐겨찾기 생성",
+        operation_description="요청한 사용자가 특정 일정에 대한 즐겨찾기를 생성",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "schedule_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="즐겨찾기할 일정 ID")
+            },
+            required=["schedule_id"],
+        ),
+        responses={
+            201: openapi.Response(
+                description="즐겨찾기 생성 성공",
+                examples={"application/json": {"message": "즐겨찾기가 생성되었습니다.", "favorite_id": 1}}
+            ),
+            400: "일정 선택 누락 또는 이미 등록된 즐겨찾기",
+            500: "서버 오류"
+        }
+    )
     def post(self, request):
         try:
             user = request.user  # 요청 사용자
@@ -183,6 +289,25 @@ class FavoriteAPIView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        operation_summary="즐겨찾기 삭제",
+        operation_description="요청한 사용자가 즐겨찾기한 특정 일정을 삭제",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "schedule_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="삭제할 일정 ID")
+            },
+            required=["schedule_id"],
+        ),
+        responses={
+            200: openapi.Response(
+                description="즐겨찾기 삭제 성공",
+                examples={"application/json": {"message": "즐겨찾기가 삭제되었습니다."}}
+            ),
+            400: "삭제할 일정 ID 누락",
+            500: "서버 오류"
+        }
+    )
     def delete(self, request):
         try:
             user = request.user
@@ -206,6 +331,28 @@ class FavoriteAPIView(APIView):
 class AdvertisementListAPIView(APIView):
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(
+        operation_summary="광고 리스트 조회",
+        operation_description="전체 광고 목록을 조회",
+        responses={
+            200: openapi.Response(
+                description="광고 리스트 조회 성공",
+                examples={"application/json": [
+                    {
+                        "id": 1,
+                        "advertisement_type": "타입",
+                        "status": True,
+                        "sent_at": "2025-03-28T10:00:00Z",
+                        "image_url": "http://example.com/image.jpg",
+                        "link_url": "http://example.com",
+                        "start_date": "2025-03-28T00:00:00Z",
+                        "end_date": "2025-03-30T00:00:00Z"
+                    }
+                ]}
+            ),
+            500: "서버 오류"
+        }
+    )
     def get(self, request):
         try:
             ads = Advertisement.objects.all()
@@ -234,6 +381,26 @@ class AdvertisementListAPIView(APIView):
 class AdvertisementDetailAPIView(APIView):
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(
+        operation_summary="광고 상세 조회",
+        operation_description="특정 광고의 상세 정보를 조회",
+        responses={
+            200: openapi.Response(
+                description="광고 상세 조회 성공",
+                examples={"application/json": {
+                    "id": 1,
+                    "advertisement_type": "타입",
+                    "status": True,
+                    "sent_at": "2025-03-28T10:00:00Z",
+                    "image_url": "http://example.com/image.jpg",
+                    "link_url": "http://example.com",
+                    "start_date": "2025-03-28T00:00:00Z",
+                    "end_date": "2025-03-30T00:00:00Z"
+                }}
+            ),
+            500: "서버 오류"
+        }
+    )
     def get(self, request, advertisement_id):
         try:
             ad = get_object_or_404(Advertisement, id=advertisement_id)
@@ -257,9 +424,8 @@ class AdvertisementDetailAPIView(APIView):
 
 
 class AdvertisementManageAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근
+    permission_classes = [IsAdminUser]  # 관리자만 접근가능
     parser_classes = (MultiPartParser, FormParser)  # 이미지 업로드를 위한 파서
-
     def post(self, request):
         try:
             if not request.user.is_staff:
@@ -306,6 +472,18 @@ class AdvertisementManageAPIView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        operation_summary="광고 삭제",
+        operation_description="관리자 권한을 가진 사용자가 특정 광고를 삭제",
+        responses={
+            200: openapi.Response(
+                description="광고 삭제 성공",
+                examples={"application/json": {"message": "광고가 삭제되었습니다."}}
+            ),
+            403: "권한 없음",
+            500: "서버 오류"
+        }
+    )
     def delete(self, request, advertisement_id):
         try:
             if not request.user.is_staff:
@@ -325,7 +503,28 @@ class AdvertisementManageAPIView(APIView):
 class StaffUpAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 로그인 사용자만 접근 가능
     parser_classes = (MultiPartParser, FormParser, JSONParser)  # 이미지 업로드 지원
-
+    @swagger_auto_schema(
+        operation_summary="스태프 권한 신청",
+        operation_description="로그인한 사용자가 스태프 권한 신청을 위해 필요한 정보를 전송하여 신청",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "artistName": openapi.Schema(type=openapi.TYPE_STRING, description="아티스트(개인, 그룹) 이름"),
+                "artist_agency": openapi.Schema(type=openapi.TYPE_STRING, description="소속사"),
+                "phone_number": openapi.Schema(type=openapi.TYPE_STRING, description="전화번호"),
+                "image_url": openapi.Schema(type=openapi.TYPE_STRING, description="첨부파일 (Base64 인코딩 문자열)"),
+            },
+            required=["artistName", "artist_agency", "phone_number", "image_url"],
+        ),
+        responses={
+            201: openapi.Response(
+                description="권한 신청 생성 성공",
+                examples={"application/json": {"message": "권한 신청이 등록되었습니다.", "authority_id": 1}},
+            ),
+            400: "필수 항목 누락 또는 이미지 처리 오류",
+            500: "서버 오류",
+        },
+    )
     def post(self, request):
         try:
             user = request.user  # 현재 로그인된 사용자
