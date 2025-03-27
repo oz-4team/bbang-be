@@ -24,18 +24,6 @@ log_dir = BASE_DIR / "logs"
 if not log_dir.exists():
     log_dir.mkdir(parents=True)
 
-
-class CustomJSONEncoder(DjangoJSONEncoder):
-    def default(self, o):
-        try:
-            # IntegerField 객체가 전달되면 문자열로 변환
-            if hasattr(o, '__class__') and o.__class__.__name__ == 'IntegerField':
-                return str(o)
-        except Exception:
-            pass
-        return super().default(o)
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -202,19 +190,6 @@ SIMPLE_JWT = {  # 심플 JWT 세팅
     "BLACKLIST_AFTER_ROTATION": True,  # 토큰 사용 후 블랙리스트 적용
     # 사용된 리프레쉬 토큰 블랙리스트 추가
     "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더에 사용할 토큰 타입 지정
-}
-
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'description': 'JWT Authorization header using the Bearer scheme. Example: "Authorization: Bearer {token}"',
-            'name': 'Authorization',
-            'in': 'header'
-        }
-    },
-    # 커스텀 JSON 인코더 지정 (drf_yasg 내부에서 json.dumps 호출 시 사용)
-    'JSON_ENCODER': 'bbang.settings.CustomJSONEncoder',
 }
 
 # 이메일 백엔드 (개발 콘솔용) *수정 필요
