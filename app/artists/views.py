@@ -5,8 +5,6 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 from app.artists.models import Artist, ArtistGroup
 from app.artists.serializers import ArtistGroupSerializer, ArtistSerializer
@@ -99,10 +97,6 @@ class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @swagger_auto_schema(
-        request_body=ArtistSerializer,
-        responses={201: ArtistSerializer, 400: "Bad Request"}
-    )
     def post(self, request):
         try:
             data = request.data.copy()  # request.data를 mutable한 복사본 생성
@@ -157,10 +151,6 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @swagger_auto_schema(
-        request_body=ArtistSerializer,
-        responses={200: ArtistSerializer, 400: "Bad Request"}
-    )
     def patch(self, request, artist_id):
         try:
             artist = get_object_or_404(Artist, id=artist_id)  # 수정할 아티스트 조회, 없으면 404 반환
@@ -243,10 +233,6 @@ class ArtistGroupListView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @swagger_auto_schema(
-        request_body=ArtistGroupSerializer,
-        responses={201: ArtistSerializer, 400: "Bad Request"}
-    )
     def post(self, request):
         try:
             serializer = ArtistGroupSerializer(
@@ -270,16 +256,6 @@ class ArtistGroupListView(APIView):
 class ArtistGroupMemberAddView(APIView):
     permission_classes = [IsAdminUser]
 
-    @swagger_auto_schema(
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "artist_ids": openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_INTEGER))
-            },
-            required=["artist_ids"],
-        ),
-        responses={200: "아티스트 멤버가 추가되었습니다.", 400: "Bad Request"},
-    )
     def post(self, request, group_id):
         artist_group = get_object_or_404(ArtistGroup, id=group_id)
         artist_ids = request.data.get("artist_ids")
@@ -295,20 +271,6 @@ class ArtistGroupMemberAddView(APIView):
 
 class ArtistGroupMemberCreateView(APIView):
     permission_classes = [IsAdminUser]
-
-    @swagger_auto_schema(
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "members": openapi.Schema(
-                    type=openapi.TYPE_ARRAY,
-                    items=openapi.Schema(type=openapi.TYPE_OBJECT, properties=ArtistSerializer().get_fields()),
-                )
-            },
-            required=["members"],
-        ),
-        responses={201: "멤버 생성 완료", 400: "Bad Request"},
-    )
 
     def post(self, request, group_id):
         artist_group = get_object_or_404(ArtistGroup, id=group_id)
@@ -372,10 +334,7 @@ class ArtistGroupDetailView(APIView):
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-    @swagger_auto_schema(
-        request_body=ArtistGroupSerializer,
-        responses={201: ArtistSerializer, 400: "Bad Request"}
-    )
+
     def patch(self, request, artist_group_id):
         try:
             artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)  # 수정할 그룹 아티스트 조회
