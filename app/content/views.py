@@ -1,14 +1,16 @@
 import logging
 
 from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import (
+    Base64ImageField,  # for handling Base64 encoded image fields
+)
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_extra_fields.fields import Base64ImageField  # for handling Base64 encoded image fields
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 from app.artists.models import Artist, ArtistGroup
 from app.content.models import (  # 권한 신청 모델 import
@@ -336,9 +338,13 @@ class StaffUpAPIView(APIView):
             base64_image = data.get("image_url")
             if base64_image:
                 try:
-                    data["image_url"] = base64_field.to_internal_value(base64_image)  # Base64 문자열을 이미지 파일 객체로 변환
+                    data["image_url"] = base64_field.to_internal_value(
+                        base64_image
+                    )  # Base64 문자열을 이미지 파일 객체로 변환
                 except Exception as e:
-                    return Response({"error": "이미지 처리 중 오류 발생: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        {"error": "이미지 처리 중 오류 발생: " + str(e)}, status=status.HTTP_400_BAD_REQUEST
+                    )
 
             data["user"] = user.id  # 요청 유저 ID 설정
 

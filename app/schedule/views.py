@@ -2,12 +2,12 @@ import logging
 from decimal import ROUND_DOWN, Decimal
 
 from django.shortcuts import get_object_or_404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 from app.artists.models import Artist, ArtistGroup
 from app.content.models import Favorites
@@ -25,7 +25,6 @@ schedule_error = logging.getLogger("schedule")
 
 class ScheduleListView(APIView):
     permission_classes = [AllowAny]
-
 
     def get(self, request):
         schedules = Schedule.objects.all()

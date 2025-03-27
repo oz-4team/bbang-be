@@ -2,15 +2,14 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-
 
 from app.accounts.email import send_password_reset_email
 from app.accounts.serializers import ProfileSerializer, RegisterSerializer
@@ -38,7 +37,7 @@ class RegisterAPIView(APIView):
 
     @swagger_auto_schema(
         request_body=RegisterSerializer,  # 요청 바디 명시
-        responses={201: openapi.Response("회원가입 성공", RegisterSerializer)}
+        responses={201: openapi.Response("회원가입 성공", RegisterSerializer)},
     )
     def post(self, request):  # POST
         try:
@@ -119,7 +118,6 @@ class LoginAPIView(TokenObtainPairView):
             required=["email", "password"],
         )
     )
-
     def post(self, request, *args, **kwargs):
         try:
             response = super().post(request, *args, **kwargs)
@@ -226,9 +224,7 @@ class UserProfileAPIView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @swagger_auto_schema(
-        request_body=ProfileSerializer
-    )
+    @swagger_auto_schema(request_body=ProfileSerializer)
     def patch(self, request, *args, **kwargs):  # PATCH.
         try:
             user = self.get_object()  # 현재 사용자 가져오기
