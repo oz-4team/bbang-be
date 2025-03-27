@@ -35,10 +35,10 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 # ALLOWED_HOSTS 설정 이후에 CSRF_TRUSTED_ORIGINS를 추가합니다.
-CSRF_TRUSTED_ORIGINS = [  # CSRF 검증을 위한 신뢰할 도메인 목록 설정
-    "https://seonhm.kr",  # HTTPS 스킴과 함께 seonhm.kr 도메인 추가
-]
-
+# CSRF_TRUSTED_ORIGINS = [  # CSRF 검증을 위한 신뢰할 도메인 목록 설정
+#     "https://seonhm.kr",  # HTTPS 스킴과 함께 seonhm.kr 도메인 추가
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -180,6 +180,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+}
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_API_URL': 'https://seonhm.kr',  # Swagger 기본 URL을 HTTPS로 설정
 }
 
 SIMPLE_JWT = {  # 심플 JWT 세팅
