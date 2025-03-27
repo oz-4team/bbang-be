@@ -6,6 +6,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_extra_fields.fields import Base64ImageField  # for handling Base64 encoded image fields
 
 from app.artists.models import Artist, ArtistGroup
 from app.content.models import (  # 권한 신청 모델 import
@@ -329,14 +330,21 @@ class StaffUpAPIView(APIView):
         try:
             user = request.user  # 현재 로그인된 사용자
             data = request.data.copy()  # 유연하게 복사
+            base64_field = Base64ImageField()
+            base64_image = data.get("image_url")
+            if base64_image:
+                try:
+                    data["image_url"] = base64_field.to_internal_value(base64_image)  # Base64 문자열을 이미지 파일 객체로 변환
+                except Exception as e:
+                    return Response({"error": "이미지 처리 중 오류 발생: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
             data["user"] = user.id  # 요청 유저 ID 설정
 
             artist_name = data.get("artistName")  # 아티스트 이름
             agency = data.get("artist_agency")  # 소속사
             phone = data.get("phone_number")  # 전화번호
-            image_url = data.get("image_url")  # 이미지 URL
 
-            if not artist_name or not agency or not phone or not image_url:
+            if not artist_name or not agency or not phone or not data.get("image_url"):
                 return Response(  # 셋중 하나라도 없으면 예외처리
                     {"error": "필수 항목이 누락되었습니다."},
                     status=status.HTTP_400_BAD_REQUEST,
