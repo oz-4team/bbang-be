@@ -27,6 +27,7 @@ class Artist(BaseModel):
     artist_group = models.ForeignKey(
         ArtistGroup, on_delete=models.CASCADE, null=True, blank=True, related_name="members"
     )
+    solomembers = models.BooleanField("솔로활동", null=True, blank=True, default=False)
     artist_agency = models.CharField("소속사", max_length=30, null=True, blank=True)
     artist_insta = models.CharField("인스타그램", max_length=100, null=True, blank=True)
     artist_fandom = models.CharField("아티스트팬덤", max_length=10, null=True, blank=True)

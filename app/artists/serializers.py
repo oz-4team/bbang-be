@@ -7,6 +7,7 @@ from app.content.models import Likes
 
 class ArtistSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()  # 좋아요 여부
+    solomembers = serializers.BooleanField(source="Solomembers", read_only=True)
     artist_group_id = serializers.PrimaryKeyRelatedField(
         queryset=ArtistGroup.objects.all(),
         source="artist_group",

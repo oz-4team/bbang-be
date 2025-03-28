@@ -1,4 +1,6 @@
 import logging
+
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
@@ -37,7 +39,9 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
     )
     def get(self, request):
         try:
-            artists = Artist.objects.all()  # 전체 개별 아티스트 조회
+            artists = Artist.objects.filter(  # 전체 개별 아티스트 조회
+                Q(artist_group__isnull=True) | Q(solomembers=True)
+            )  # 아티스트 그룹이 null이거나 솔로활동을 하는 멤버만 조회
             artist_groups = ArtistGroup.objects.all()  # 전체 그룹 아티스트 조회
 
             user = request.user  # 현재 요청한 사용자 정보
