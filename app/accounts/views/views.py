@@ -330,20 +330,14 @@ class UserProfileAPIView(APIView):
             user = self.get_object()  # 현재 사용자 가져오기
             data = request.data.copy()  # 요청 데이터를 복사하여 수정 가능하도록 함
 
-            if "current_password" not in data: # 현재비밀번호 입력한지 검증
-                return Response(
-                    {"error": "현재 비밀번호를 입력해야 합니다."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if "current_password" in data: # 입력한 비밀번호와 유저의 비밀번호 검증
+            if "current_password" not in data:  # 현재비밀번호 입력한지 검증
+                return Response({"error": "현재 비밀번호를 입력해야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
+            if "current_password" in data:  # 입력한 비밀번호와 유저의 비밀번호 검증
                 current_password = data["current_password"]
 
                 # 사용자의 실제 비밀번호 확인 (일반적으로 user.password는 해시된 값)
                 if not user.check_password(current_password):
-                    return Response(
-                        {"error": "현재 비밀번호가 올바르지 않습니다."},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
+                    return Response({"error": "현재 비밀번호가 올바르지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
             serializer = ProfileSerializer(user, data=data, partial=True)  # 일반적인 사용자 정보 업데이트
             if serializer.is_valid():  # 데이터 유효성 검사
