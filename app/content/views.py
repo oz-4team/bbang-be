@@ -162,37 +162,50 @@ class LikeAPIView(APIView):
 
     @swagger_auto_schema(
         operation_summary="좋아요 삭제",
-        operation_description="요청한 사용자의 좋아요를 삭제",
+        operation_description="요청한 사용자의 좋아요를 삭제합니다. 아티스트 ID나 아티스트 그룹 ID를 요청 데이터에서 전달받아 해당 좋아요를 삭제합니다.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "like_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="삭제할 좋아요 ID")
+                "artist_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="삭제할 아티스트 ID (선택)"),
+                "artist_group_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="삭제할 아티스트 그룹 ID (선택)")
             },
-            required=["like_id"],
+            # 필수값은 없지만 둘 중 하나는 전달되어야 합니다.
         ),
         responses={
             200: openapi.Response(
                 description="좋아요 삭제 성공",
                 examples={"application/json": {"message": "좋아요가 삭제되었습니다."}}
             ),
-            400: "삭제할 좋아요 ID 누락",
+            400: "삭제할 항목 누락 또는 조건에 맞는 좋아요가 존재하지 않음",
             500: "서버 오류"
         }
     )
     def delete(self, request):
         try:
-            # 좋아요 삭제를 위한 ID를 요청 데이터에서 가져옴
-            like_id = request.data.get("like_id")
-            if not like_id:  # 좋아요 아이디가 없으면
-                return Response(  # 예외처리
-                    {"error": "삭제할 좋아요 ID가 필요합니다."},
+            user = request.user  # 요청 사용자
+            # 요청 데이터에서 artist_id와 artist_group_id 추출
+            artist_id = request.data.get("artist_id")
+            artist_group_id = request.data.get("artist_group_id")
+
+            # 둘 중 하나도 전달되지 않은 경우 에러 반환
+            if not artist_id and not artist_group_id:
+                return Response(
+                    {"error": "삭제할 항목으로 아티스트 ID 또는 아티스트 그룹 ID를 전달해주세요."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            like = get_object_or_404(Likes, id=like_id, user=request.user)  # 조회
-            like.delete()  # 좋아요 삭제
-            return Response({"message": "좋아요가 삭제되었습니다."}, status=status.HTTP_200_OK)  # 메시지 상태코드
+
+            # artist_id가 전달되면 해당 조건의 좋아요 조회
+            if artist_id:
+                like = get_object_or_404(Likes, artist__id=artist_id, user=user)
+            else:
+                # artist_group_id가 전달되면 해당 조건의 좋아요 조회
+                like = get_object_or_404(Likes, artist_group__id=artist_group_id, user=user)
+
+            # 좋아요 삭제
+            like.delete()
+            return Response({"message": "좋아요가 삭제되었습니다."}, status=status.HTTP_200_OK)
         except Exception as e:
-            content_error.error(f"Content API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
+            content_error.error(f"Content API 에러 발생 {e}", exc_info=True)  # 예외 로깅
             return Response(
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
