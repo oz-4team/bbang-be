@@ -62,7 +62,7 @@ class ScheduleListView(APIView):
         },
     )
     def get(self, request):
-        schedules = Schedule.objects.all()  # 일정 전체 가져오기
+        schedules = Schedule.objects.all().order_by("start_date")  # 일정 전체 가져오기
         serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
@@ -87,7 +87,7 @@ class ArtistScheduleListView(APIView):
         },
     )
     def get(self, request, artist_id):
-        schedules = Schedule.objects.filter(artist__id=artist_id)  # 아티스트 아이디로 일정 조회
+        schedules = Schedule.objects.filter(artist__id=artist_id).order_by("start_date")  # 아티스트 아이디로 일정 조회
         serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
@@ -112,7 +112,7 @@ class ArtistGroupScheduleListView(APIView):
         },
     )
     def get(self, request, artist_group_id):
-        schedules = Schedule.objects.filter(artist_group__id=artist_group_id)  # 아티스트 그룹 아이디로 일정 조회
+        schedules = Schedule.objects.filter(artist_group__id=artist_group_id).order_by("start_date")  # 아티스트 그룹 아이디로 일정 조회
         serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
@@ -163,11 +163,11 @@ class FavoriteSchedulesView(APIView):
         },
     )
     def get(self, request):
-        user = request.user  # 유저 정보 가져옴
-        favorites = Favorites.objects.filter(user=user)  # 유저가 즐겨찾기한 정보 가져옴
-        schedules = [fav.schedule for fav in favorites if fav.schedule]  # 일정 리스트화
-        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
-        return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
+        user = request.user
+        # Favorites를 통해 연결된 Schedule 중, start_date 기준 오름차순
+        schedules = Schedule.objects.filter(favorites__user=user).order_by("start_date")
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request}) # 직렬화
+        return Response(serializer.data, status=status.HTTP_200_OK) # 반환
 
 
 # 아티스트 일정 관리 API (생성, 수정, 삭제)

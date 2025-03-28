@@ -47,7 +47,6 @@ class ScheduleSerializer(serializers.ModelSerializer):
             "category",
             "latitude",
             "longitude",
-            "solomember",
             "user",
             "artist",
             "artist_id",
