@@ -15,6 +15,7 @@ class Schedule(BaseModel):
     start_date = models.DateTimeField("시작 날짜", default=timezone.now)
     end_date = models.DateTimeField("종료 날짜", default=timezone.now)
     location = models.CharField("장소", max_length=100, null=True, blank=True)
+    category = models.CharField('카테고리', max_length=20, null=True, blank=True)
     latitude = models.DecimalField(
         "위도", max_digits=10, decimal_places=7, null=True, blank=True
     )  # 최대 10자리 숫자 중 소수점 이하 7자리 허용
