@@ -27,11 +27,11 @@ class Artist(BaseModel):
     artist_group = models.ForeignKey(
         ArtistGroup, on_delete=models.CASCADE, null=True, blank=True, related_name="members"
     )
+    solomembers = models.BooleanField("솔로활동", null=True, blank=True, default=False)
     artist_agency = models.CharField("소속사", max_length=30, null=True, blank=True)
     artist_insta = models.CharField("인스타그램", max_length=100, null=True, blank=True)
     artist_fandom = models.CharField("아티스트팬덤", max_length=10, null=True, blank=True)
     debut_date = models.DateField("데뷔 날짜", null=True, blank=True)
-
     image_url = models.ImageField("아티스트 이미지", upload_to="artists/", null=True, blank=True)
     # image -> image_url 로 변경
     created_by = models.ForeignKey(
