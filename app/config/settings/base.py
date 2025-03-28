@@ -86,7 +86,9 @@ CORS_ALLOWED_ORIGINS = [
     "https://idolsync.kro.kr",
     "https://seonhm.kr",
 ]
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://seonhm.kr",
+]
 
 APPEND_SLASH = True
 
