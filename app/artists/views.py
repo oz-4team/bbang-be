@@ -508,7 +508,7 @@ class ArtistGroupDetailView(APIView):
     )
     def get(self, request, artist_group_id):
         try:
-            artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)
+            artist_group = ArtistGroup.objects.prefetch_related('members').get(id=artist_group_id)
             from app.artists.serializers import ArtistGroupDetailSerializer
 
             serializer = ArtistGroupDetailSerializer(artist_group, context={"request": request})
