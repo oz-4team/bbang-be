@@ -5,6 +5,7 @@ from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -210,6 +211,12 @@ class LoginAPIView(TokenObtainPairView):
                     }
                 )
             return response
+
+        except AuthenticationFailed:
+            return Response(
+                {"message": "이메일 인증이 필요합니다. 가입한 이메일로 전송된 인증 링크를 확인해주세요."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         except Exception as e:
             account_error.error(f"Account API 에러 발생 {e}", exc_info=True)
