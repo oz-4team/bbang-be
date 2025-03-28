@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import json
 import os
 from datetime import timedelta
 from pathlib import Path
-import json
+
 from django.core.serializers.json import DjangoJSONEncoder
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -184,15 +185,15 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
 }
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
         }
     },
-    'USE_SESSION_AUTH': False,
-    'DEFAULT_API_URL': 'https://seonhm.kr',  # Swagger 기본 URL을 HTTPS로 설정
+    "USE_SESSION_AUTH": False,
+    "DEFAULT_API_URL": "https://seonhm.kr",  # Swagger 기본 URL을 HTTPS로 설정
 }
 
 SIMPLE_JWT = {  # 심플 JWT 세팅

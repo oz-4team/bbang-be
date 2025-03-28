@@ -2,14 +2,15 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+
 from app.accounts.email import send_password_reset_email
 from app.accounts.serializers import ProfileSerializer, RegisterSerializer
 
@@ -33,6 +34,7 @@ account_error = logging.getLogger("account")
 # 회원가입 API
 class RegisterAPIView(APIView):
     permission_classes = [AllowAny]  # 누구나 접근 가능
+
     @swagger_auto_schema(
         operation_summary="회원가입",
         operation_description="이메일, 비밀번호, 닉네임 등을 받아 새로운 사용자를 생성하고 이메일 인증 메일을 전송.",
@@ -40,11 +42,7 @@ class RegisterAPIView(APIView):
         responses={
             201: openapi.Response(
                 description="회원가입 성공",
-                examples={
-                    "application/json": {
-                        "message": "회원가입 성공. 이메일 인증을 위해 메일을 확인해주세요."
-                    }
-                },
+                examples={"application/json": {"message": "회원가입 성공. 이메일 인증을 위해 메일을 확인해주세요."}},
             ),
             400: "잘못된 요청 또는 유효성 검증 실패",
             500: "서버 오류",
@@ -74,6 +72,7 @@ class RegisterAPIView(APIView):
 # 이메일 인증API
 class VerifyEmailAPIView(APIView):
     permission_classes = [AllowAny]  # 누구나 접근 가능
+
     @swagger_auto_schema(
         operation_summary="이메일 인증",
         operation_description="이메일로 전송된 토큰을 GET 파라미터로 받아서 이메일 인증 완료.",
@@ -138,6 +137,7 @@ class VerifyEmailAPIView(APIView):
 # 로그인 API
 class LoginAPIView(TokenObtainPairView):
     permission_classes = [AllowAny]  # 누구나 접근 가능
+
     @swagger_auto_schema(
         operation_summary="로그인",
         operation_description="이메일과 비밀번호를 받아 JWT 토큰을 발급",
@@ -222,6 +222,7 @@ class LoginAPIView(TokenObtainPairView):
 # 로그아웃 API
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근가능
+
     @swagger_auto_schema(
         operation_summary="로그아웃",
         operation_description="Refresh 토큰을 받아 해당 토큰을 블랙리스트 처리",
@@ -270,6 +271,7 @@ class UserProfileAPIView(APIView):
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
     @swagger_auto_schema(
         operation_summary="사용자 정보 조회",
         operation_description="로그인된 사용자의 정보를 조회합니다.",
@@ -328,6 +330,21 @@ class UserProfileAPIView(APIView):
             user = self.get_object()  # 현재 사용자 가져오기
             data = request.data.copy()  # 요청 데이터를 복사하여 수정 가능하도록 함
 
+            if "current_password" not in data: # 현재비밀번호 입력한지 검증
+                return Response(
+                    {"error": "현재 비밀번호를 입력해야 합니다."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if "current_password" in data: # 입력한 비밀번호와 유저의 비밀번호 검증
+                current_password = data["current_password"]
+
+                # 사용자의 실제 비밀번호 확인 (일반적으로 user.password는 해시된 값)
+                if not user.check_password(current_password):
+                    return Response(
+                        {"error": "현재 비밀번호가 올바르지 않습니다."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
             serializer = ProfileSerializer(user, data=data, partial=True)  # 일반적인 사용자 정보 업데이트
             if serializer.is_valid():  # 데이터 유효성 검사
                 serializer.save()  # 변경사항 저장
@@ -340,6 +357,7 @@ class UserProfileAPIView(APIView):
                 {"message": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
     @swagger_auto_schema(
         operation_summary="회원 탈퇴",
         operation_description="로그인된 사용자 계정삭제",
@@ -368,6 +386,7 @@ class UserProfileAPIView(APIView):
 # 사용자 비밀번호 재설정 메일 전송 API
 class RequestPasswordResetAPIView(APIView):
     permission_classes = [AllowAny]  # 인증 없이 접근 가능
+
     @swagger_auto_schema(
         operation_summary="비밀번호 재설정 이메일전송",
         operation_description="이메일을 받아 해당 사용자에게 비밀번호 재설정 링크전송",
@@ -420,6 +439,7 @@ class RequestPasswordResetAPIView(APIView):
 # 사용자 비밀번호 재설정 토큰검증 API
 class CheckResetTokenAPIView(APIView):
     permission_classes = [AllowAny]  # 인증 없이 접근 가능
+
     @swagger_auto_schema(
         operation_summary="비밀번호 재설정 토큰 검증",
         operation_description="이메일로 전송된 토큰의 유효성검사",
@@ -471,6 +491,7 @@ class CheckResetTokenAPIView(APIView):
 # 사용자 비밀번호 재설정 API
 class ResetPasswordAPIView(APIView):
     permission_classes = [AllowAny]  # 인증 없이 접근 가능
+
     @swagger_auto_schema(
         operation_summary="비밀번호 재설정",
         operation_description="토큰과 새 비밀번호를 받아 실제 비밀번호변경",

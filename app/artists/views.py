@@ -1,12 +1,12 @@
 import logging
+
 from django.shortcuts import get_object_or_404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 from app.artists.models import Artist, ArtistGroup
 from app.artists.serializers import ArtistGroupSerializer, ArtistSerializer
@@ -32,7 +32,7 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                     }
                 },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request):
@@ -53,7 +53,9 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                     Likes.objects.filter(user=user, artist_id__in=artist_ids).values_list("artist_id", flat=True)
                 )
                 liked_group_ids = set(
-                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list("artist_group_id", flat=True)
+                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list(
+                        "artist_group_id", flat=True
+                    )
                 )
 
             # context에 liked IDs를 담아서 전송
@@ -95,11 +97,13 @@ class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
         responses={
             200: openapi.Response(
                 description="조회 성공",
-                examples={"application/json": [
-                    # ArtistSerializer로 직렬화된 데이터 예시
-                ]},
+                examples={
+                    "application/json": [
+                        # ArtistSerializer로 직렬화된 데이터 예시
+                    ]
+                },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request):
@@ -134,9 +138,11 @@ class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
         responses={
             201: openapi.Response(
                 description="생성 성공",
-                examples={"application/json": {
-                    # 생성된 ArtistSerializer 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # 생성된 ArtistSerializer 데이터 예시
+                    }
+                },
             ),
             400: "잘못된 요청",
             500: "서버 오류",
@@ -190,11 +196,13 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
         responses={
             200: openapi.Response(
                 description="조회 성공",
-                examples={"application/json": {
-                    # ArtistSerializer로 직렬화된 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # ArtistSerializer로 직렬화된 데이터 예시
+                    }
+                },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request, artist_id):
@@ -216,9 +224,11 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
         responses={
             200: openapi.Response(
                 description="수정 성공",
-                examples={"application/json": {
-                    # 수정된 ArtistSerializer 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # 수정된 ArtistSerializer 데이터 예시
+                    }
+                },
             ),
             400: "잘못된 요청",
             500: "서버 오류",
@@ -258,7 +268,7 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
                 description="삭제 성공",
                 examples={"application/json": {"message": "개별 아티스트가 삭제되었습니다."}},
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def delete(self, request, artist_id):
@@ -296,11 +306,13 @@ class ArtistGroupListView(APIView):
         responses={
             200: openapi.Response(
                 description="조회 성공",
-                examples={"application/json": [
-                    # ArtistGroupSerializer로 직렬화된 데이터 예시
-                ]},
+                examples={
+                    "application/json": [
+                        # ArtistGroupSerializer로 직렬화된 데이터 예시
+                    ]
+                },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request):
@@ -337,9 +349,11 @@ class ArtistGroupListView(APIView):
         responses={
             201: openapi.Response(
                 description="생성 성공",
-                examples={"application/json": {
-                    # 생성된 ArtistGroupSerializer 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # 생성된 ArtistGroupSerializer 데이터 예시
+                    }
+                },
             ),
             400: "잘못된 요청",
             500: "서버 오류",
@@ -377,7 +391,7 @@ class ArtistGroupMemberAddView(APIView):
                 "artist_ids": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Schema(type=openapi.TYPE_INTEGER),
-                    description="추가할 아티스트 ID 목록"
+                    description="추가할 아티스트 ID 목록",
                 )
             },
             required=["artist_ids"],
@@ -415,7 +429,7 @@ class ArtistGroupMemberCreateView(APIView):
                 "members": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Schema(type=openapi.TYPE_OBJECT),
-                    description="생성할 멤버 데이터 목록"
+                    description="생성할 멤버 데이터 목록",
                 )
             },
             required=["members"],
@@ -423,9 +437,13 @@ class ArtistGroupMemberCreateView(APIView):
         responses={
             201: openapi.Response(
                 description="생성 성공",
-                examples={"application/json": {"created_members": [
-                    # ArtistSerializer로 직렬화된 생성된 멤버 데이터 예시
-                ]}},
+                examples={
+                    "application/json": {
+                        "created_members": [
+                            # ArtistSerializer로 직렬화된 생성된 멤버 데이터 예시
+                        ]
+                    }
+                },
             ),
             400: "members 필드 누락 또는 데이터 오류",
         },
@@ -495,11 +513,13 @@ class ArtistGroupDetailView(APIView):
         responses={
             200: openapi.Response(
                 description="조회 성공",
-                examples={"application/json": {
-                    # ArtistGroupDetailSerializer로 직렬화된 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # ArtistGroupDetailSerializer로 직렬화된 데이터 예시
+                    }
+                },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request, artist_group_id):
@@ -524,9 +544,11 @@ class ArtistGroupDetailView(APIView):
         responses={
             200: openapi.Response(
                 description="수정 성공",
-                examples={"application/json": {
-                    # 수정된 ArtistGroupSerializer 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # 수정된 ArtistGroupSerializer 데이터 예시
+                    }
+                },
             ),
             400: "잘못된 요청",
             500: "서버 오류",
@@ -558,7 +580,7 @@ class ArtistGroupDetailView(APIView):
                 description="삭제 성공",
                 examples={"application/json": {"message": "그룹 아티스트가 삭제되었습니다."}},
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def delete(self, request, artist_group_id):
@@ -586,16 +608,18 @@ class StaffArtistAndGroupListView(APIView):
         responses={
             200: openapi.Response(
                 description="조회 성공",
-                examples={"application/json": {
-                    "artists": [
-                        # ArtistSerializer 데이터 예시
-                    ],
-                    "artist_groups": [
-                        # ArtistGroupSerializer 데이터 예시
-                    ]
-                }},
+                examples={
+                    "application/json": {
+                        "artists": [
+                            # ArtistSerializer 데이터 예시
+                        ],
+                        "artist_groups": [
+                            # ArtistGroupSerializer 데이터 예시
+                        ],
+                    }
+                },
             ),
-            403: "권한 없음"
+            403: "권한 없음",
         },
     )
     def get(self, request):

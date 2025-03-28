@@ -2,13 +2,12 @@ import logging
 from decimal import ROUND_DOWN, Decimal
 
 from django.shortcuts import get_object_or_404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 from app.artists.models import Artist, ArtistGroup
 from app.content.models import Favorites
@@ -52,12 +51,12 @@ class ScheduleListView(APIView):
                             "artist_group": None,
                             "artist_group_id": None,
                             "is_favorited": False,
-                            "image_url": "http://example.com/schedule/image.jpg"
+                            "image_url": "http://example.com/schedule/image.jpg",
                         }
                     ]
-                }
+                },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request):
@@ -76,11 +75,13 @@ class ArtistScheduleListView(APIView):
         responses={
             200: openapi.Response(
                 description="아티스트 일정 조회 성공",
-                examples={"application/json": [
-                    # ScheduleSerializer 데이터 예시
-                ]},
+                examples={
+                    "application/json": [
+                        # ScheduleSerializer 데이터 예시
+                    ]
+                },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request, artist_id):
@@ -99,11 +100,13 @@ class ArtistGroupScheduleListView(APIView):
         responses={
             200: openapi.Response(
                 description="아티스트 그룹 일정 조회 성공",
-                examples={"application/json": [
-                    # ScheduleSerializer 데이터 예시
-                ]},
+                examples={
+                    "application/json": [
+                        # ScheduleSerializer 데이터 예시
+                    ]
+                },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request, artist_group_id):
@@ -122,12 +125,14 @@ class ScheduleDetailView(APIView):
         responses={
             200: openapi.Response(
                 description="일정 상세 조회 성공",
-                examples={"application/json": {
-                    # ScheduleSerializer 단일 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # ScheduleSerializer 단일 데이터 예시
+                    }
+                },
             ),
             404: "일정 없음",
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request, schedule_id):
@@ -146,11 +151,13 @@ class FavoriteSchedulesView(APIView):
         responses={
             200: openapi.Response(
                 description="즐겨찾기 일정 조회 성공",
-                examples={"application/json": [
-                    # ScheduleSerializer 데이터 예시
-                ]},
+                examples={
+                    "application/json": [
+                        # ScheduleSerializer 데이터 예시
+                    ]
+                },
             ),
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def get(self, request):
@@ -172,9 +179,11 @@ class ArtistScheduleManageView(APIView):
         responses={
             201: openapi.Response(
                 description="일정 생성 성공",
-                examples={"application/json": {
-                    # 생성된 ScheduleSerializer 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # 생성된 ScheduleSerializer 데이터 예시
+                    }
+                },
             ),
             400: "필수 필드 누락",
             403: "권한 없음",
@@ -227,13 +236,15 @@ class ArtistScheduleManageView(APIView):
         responses={
             200: openapi.Response(
                 description="일정 수정 성공",
-                examples={"application/json": {
-                    # 수정된 ScheduleSerializer 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # 수정된 ScheduleSerializer 데이터 예시
+                    }
+                },
             ),
             400: "유효성 검사 실패",
             403: "권한 없음",
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def patch(self, request, schedule_id):
@@ -264,7 +275,8 @@ class ArtistScheduleManageView(APIView):
         except Exception as e:
             schedule_error.error(f"Schedule API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
             return Response(
-                {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
     @swagger_auto_schema(
@@ -276,7 +288,7 @@ class ArtistScheduleManageView(APIView):
                 examples={"application/json": {"message": "일정이 삭제되었습니다."}},
             ),
             403: "권한 없음",
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def delete(self, request, schedule_id):
@@ -301,9 +313,11 @@ class ArtistGroupScheduleManageView(APIView):
         responses={
             201: openapi.Response(
                 description="일정 생성 성공",
-                examples={"application/json": {
-                    # 생성된 ScheduleSerializer 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # 생성된 ScheduleSerializer 데이터 예시
+                    }
+                },
             ),
             400: "필수 필드 누락",
             403: "권한 없음",
@@ -354,13 +368,15 @@ class ArtistGroupScheduleManageView(APIView):
         responses={
             200: openapi.Response(
                 description="일정 수정 성공",
-                examples={"application/json": {
-                    # 수정된 ScheduleSerializer 데이터 예시
-                }},
+                examples={
+                    "application/json": {
+                        # 수정된 ScheduleSerializer 데이터 예시
+                    }
+                },
             ),
             400: "유효성 검사 실패",
             403: "권한 없음",
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def patch(self, request, schedule_id):
@@ -404,7 +420,7 @@ class ArtistGroupScheduleManageView(APIView):
                 examples={"application/json": {"message": "일정이 삭제되었습니다."}},
             ),
             403: "권한 없음",
-            500: "서버 오류"
+            500: "서버 오류",
         },
     )
     def delete(self, request, schedule_id):
