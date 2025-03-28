@@ -1,12 +1,12 @@
 import logging
-
 from django.shortcuts import get_object_or_404
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from app.artists.models import Artist, ArtistGroup
 from app.artists.serializers import ArtistGroupSerializer, ArtistSerializer
@@ -18,12 +18,29 @@ artist_error = logging.getLogger("artist")
 class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티스트를 동시에 조회
     permission_classes = [AllowAny]  # 인증된 사용자만 접근가능
 
+    @swagger_auto_schema(
+        operation_summary="개별 아티스트 및 그룹 아티스트 조회",
+        operation_description="전체 개별 아티스트와 그룹 아티스트를 조회하고, 인증된 사용자의 경우 좋아요 여부를 포함하여 반환",
+        responses={
+            200: openapi.Response(
+                description="조회 성공",
+                examples={
+                    "application/json": {
+                        "data": [
+                            # ArtistSerializer와 ArtistGroupSerializer로 직렬화된 데이터 예시
+                        ]
+                    }
+                },
+            ),
+            500: "서버 오류"
+        },
+    )
     def get(self, request):
         try:
             artists = Artist.objects.all()  # 전체 개별 아티스트 조회
             artist_groups = ArtistGroup.objects.all()  # 전체 그룹 아티스트 조회
 
-            user = request.user
+            user = request.user  # 현재 요청한 사용자 정보
             liked_artist_ids = set()
             liked_group_ids = set()
 
@@ -36,9 +53,7 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                     Likes.objects.filter(user=user, artist_id__in=artist_ids).values_list("artist_id", flat=True)
                 )
                 liked_group_ids = set(
-                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list(
-                        "artist_group_id", flat=True
-                    )
+                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list("artist_group_id", flat=True)
                 )
 
             # context에 liked IDs를 담아서 전송
@@ -74,6 +89,19 @@ class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        operation_summary="개별 아티스트 전체 조회",
+        operation_description="전체 개별 아티스트를 조회하고, 인증된 사용자의 경우 좋아요 여부를 포함하여 반환",
+        responses={
+            200: openapi.Response(
+                description="조회 성공",
+                examples={"application/json": [
+                    # ArtistSerializer로 직렬화된 데이터 예시
+                ]},
+            ),
+            500: "서버 오류"
+        },
+    )
     def get(self, request):
         try:
             artists = Artist.objects.all()
@@ -99,7 +127,21 @@ class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @swagger_auto_schema(request_body=ArtistSerializer, responses={201: ArtistSerializer, 400: "Bad Request"})
+    @swagger_auto_schema(
+        operation_summary="개별 아티스트 생성",
+        operation_description="새로운 개별 아티스트를 생성합니다. artist_group_id가 전달되면 해당 그룹에 연결",
+        request_body=ArtistSerializer,
+        responses={
+            201: openapi.Response(
+                description="생성 성공",
+                examples={"application/json": {
+                    # 생성된 ArtistSerializer 데이터 예시
+                }},
+            ),
+            400: "잘못된 요청",
+            500: "서버 오류",
+        },
+    )
     def post(self, request):
         try:
             data = request.data.copy()  # request.data를 mutable한 복사본 생성
@@ -142,6 +184,19 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        operation_summary="개별 아티스트 상세 조회",
+        operation_description="특정 ID에 해당하는 개별 아티스트의 상세 정보를 조회",
+        responses={
+            200: openapi.Response(
+                description="조회 성공",
+                examples={"application/json": {
+                    # ArtistSerializer로 직렬화된 데이터 예시
+                }},
+            ),
+            500: "서버 오류"
+        },
+    )
     def get(self, request, artist_id):
         try:
             artist = get_object_or_404(Artist, id=artist_id)  # 지정한 ID의 아티스트 조회, 없으면 404 반환
@@ -154,7 +209,21 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @swagger_auto_schema(request_body=ArtistSerializer, responses={200: ArtistSerializer, 400: "Bad Request"})
+    @swagger_auto_schema(
+        operation_summary="개별 아티스트 수정",
+        operation_description="특정 ID에 해당하는 개별 아티스트의 정보를 수정 artist_group_id가 전달되면 해당 그룹 정보로 수정",
+        request_body=ArtistSerializer,
+        responses={
+            200: openapi.Response(
+                description="수정 성공",
+                examples={"application/json": {
+                    # 수정된 ArtistSerializer 데이터 예시
+                }},
+            ),
+            400: "잘못된 요청",
+            500: "서버 오류",
+        },
+    )
     def patch(self, request, artist_id):
         try:
             artist = get_object_or_404(Artist, id=artist_id)  # 수정할 아티스트 조회, 없으면 404 반환
@@ -181,6 +250,17 @@ class ArtistDetailView(APIView):  # 개별 아티스트 상세조회, 수정, �
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        operation_summary="개별 아티스트 삭제",
+        operation_description="특정 ID에 해당하는 개별 아티스트를 삭제",
+        responses={
+            204: openapi.Response(
+                description="삭제 성공",
+                examples={"application/json": {"message": "개별 아티스트가 삭제되었습니다."}},
+            ),
+            500: "서버 오류"
+        },
+    )
     def delete(self, request, artist_id):
         try:
             artist = get_object_or_404(Artist, id=artist_id)  # 삭제할 아티스트 조회
@@ -204,12 +284,25 @@ class ArtistGroupListView(APIView):
                 return [IsAuthenticated()]
             return [IsAdminUser()]
         except Exception as e:
-            artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
+            artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)
             return Response(
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        operation_summary="그룹 아티스트 전체 조회",
+        operation_description="전체 그룹 아티스트를 조회하고, 인증된 사용자의 경우 좋아요 여부를 포함하여 반환",
+        responses={
+            200: openapi.Response(
+                description="조회 성공",
+                examples={"application/json": [
+                    # ArtistGroupSerializer로 직렬화된 데이터 예시
+                ]},
+            ),
+            500: "서버 오류"
+        },
+    )
     def get(self, request):
         try:
             artist_groups = ArtistGroup.objects.all()  # 전체 그룹 아티스트 조회
@@ -231,13 +324,27 @@ class ArtistGroupListView(APIView):
             serializer = ArtistGroupSerializer(artist_groups, many=True, context=context)  # 데이터를 직렬화
             return Response(serializer.data, status=status.HTTP_200_OK)  # 200 OK 상태와 함께 데이터를 반환
         except Exception as e:
-            artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
+            artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)
             return Response(
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @swagger_auto_schema(request_body=ArtistGroupSerializer, responses={201: ArtistSerializer, 400: "Bad Request"})
+    @swagger_auto_schema(
+        operation_summary="그룹 아티스트 생성",
+        operation_description="새로운 그룹 아티스트를 생성",
+        request_body=ArtistGroupSerializer,
+        responses={
+            201: openapi.Response(
+                description="생성 성공",
+                examples={"application/json": {
+                    # 생성된 ArtistGroupSerializer 데이터 예시
+                }},
+            ),
+            400: "잘못된 요청",
+            500: "서버 오류",
+        },
+    )
     def post(self, request):
         try:
             serializer = ArtistGroupSerializer(
@@ -251,7 +358,7 @@ class ArtistGroupListView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 오류 발생 시 400 BAD REQUEST 반환
 
         except Exception as e:
-            artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
+            artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)
             return Response(
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -262,14 +369,26 @@ class ArtistGroupMemberAddView(APIView):
     permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
+        operation_summary="그룹에 멤버 추가",
+        operation_description="지정한 그룹에 artist_ids 목록에 포함된 아티스트들을 추가",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "artist_ids": openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_INTEGER))
+                "artist_ids": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                    description="추가할 아티스트 ID 목록"
+                )
             },
             required=["artist_ids"],
         ),
-        responses={200: "아티스트 멤버가 추가되었습니다.", 400: "Bad Request"},
+        responses={
+            200: openapi.Response(
+                description="추가 성공",
+                examples={"application/json": {"message": "아티스트 멤버가 그룹에 추가되었습니다."}},
+            ),
+            400: "artist_ids 누락",
+        },
     )
     def post(self, request, group_id):
         artist_group = get_object_or_404(ArtistGroup, id=group_id)
@@ -288,17 +407,28 @@ class ArtistGroupMemberCreateView(APIView):
     permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
+        operation_summary="그룹 멤버 생성",
+        operation_description="지정한 그룹에 members 필드에 포함된 데이터를 기반으로 새로운 아티스트 멤버를 생성",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
                 "members": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
-                    items=openapi.Schema(type=openapi.TYPE_OBJECT, properties=ArtistSerializer().get_fields()),
+                    items=openapi.Schema(type=openapi.TYPE_OBJECT),
+                    description="생성할 멤버 데이터 목록"
                 )
             },
             required=["members"],
         ),
-        responses={201: "멤버 생성 완료", 400: "Bad Request"},
+        responses={
+            201: openapi.Response(
+                description="생성 성공",
+                examples={"application/json": {"created_members": [
+                    # ArtistSerializer로 직렬화된 생성된 멤버 데이터 예시
+                ]}},
+            ),
+            400: "members 필드 누락 또는 데이터 오류",
+        },
     )
     def post(self, request, group_id):
         artist_group = get_object_or_404(ArtistGroup, id=group_id)
@@ -323,6 +453,17 @@ class ArtistGroupMemberCreateView(APIView):
 class ArtistGroupMemberDeleteView(APIView):
     permission_classes = [IsAdminUser]
 
+    @swagger_auto_schema(
+        operation_summary="그룹 멤버 삭제",
+        operation_description="지정한 그룹에서 특정 아티스트 멤버를 삭제",
+        responses={
+            200: openapi.Response(
+                description="삭제 성공",
+                examples={"application/json": {"message": "멤버가 그룹에서 삭제되었습니다."}},
+            ),
+            400: "해당 아티스트가 그룹에 속해 있지 않음",
+        },
+    )
     def delete(self, request, group_id, artist_id):
         artist_group = get_object_or_404(ArtistGroup, id=group_id)
         artist = get_object_or_404(Artist, id=artist_id)
@@ -348,6 +489,19 @@ class ArtistGroupDetailView(APIView):
             # 로깅 처리 ...
             return [IsAdminUser()]  # fallback
 
+    @swagger_auto_schema(
+        operation_summary="그룹 아티스트 상세 조회",
+        operation_description="특정 그룹 아티스트의 상세 정보를 조회 -> 멤버 목록 포함.",
+        responses={
+            200: openapi.Response(
+                description="조회 성공",
+                examples={"application/json": {
+                    # ArtistGroupDetailSerializer로 직렬화된 데이터 예시
+                }},
+            ),
+            500: "서버 오류"
+        },
+    )
     def get(self, request, artist_group_id):
         try:
             artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)
@@ -363,7 +517,21 @@ class ArtistGroupDetailView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    @swagger_auto_schema(request_body=ArtistGroupSerializer, responses={201: ArtistSerializer, 400: "Bad Request"})
+    @swagger_auto_schema(
+        operation_summary="그룹 아티스트 수정",
+        operation_description="특정 그룹 아티스트의 정보를 수정",
+        request_body=ArtistGroupSerializer,
+        responses={
+            200: openapi.Response(
+                description="수정 성공",
+                examples={"application/json": {
+                    # 수정된 ArtistGroupSerializer 데이터 예시
+                }},
+            ),
+            400: "잘못된 요청",
+            500: "서버 오류",
+        },
+    )
     def patch(self, request, artist_group_id):
         try:
             artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)  # 수정할 그룹 아티스트 조회
@@ -382,6 +550,17 @@ class ArtistGroupDetailView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+    @swagger_auto_schema(
+        operation_summary="그룹 아티스트 삭제",
+        operation_description="특정 그룹 아티스트를 삭제",
+        responses={
+            204: openapi.Response(
+                description="삭제 성공",
+                examples={"application/json": {"message": "그룹 아티스트가 삭제되었습니다."}},
+            ),
+            500: "서버 오류"
+        },
+    )
     def delete(self, request, artist_group_id):
         try:
             artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)  # 삭제할 그룹 아티스트 조회
@@ -401,6 +580,24 @@ class ArtistGroupDetailView(APIView):
 class StaffArtistAndGroupListView(APIView):
     permission_classes = [IsAdminUser]  # Only authenticated users can access
 
+    @swagger_auto_schema(
+        operation_summary="스태프 전용 아티스트 및 그룹 조회",
+        operation_description="스태프 권한을 가진 사용자가 자신이 생성한 아티스트와 그룹 아티스트를 조회",
+        responses={
+            200: openapi.Response(
+                description="조회 성공",
+                examples={"application/json": {
+                    "artists": [
+                        # ArtistSerializer 데이터 예시
+                    ],
+                    "artist_groups": [
+                        # ArtistGroupSerializer 데이터 예시
+                    ]
+                }},
+            ),
+            403: "권한 없음"
+        },
+    )
     def get(self, request):
         user = request.user
         # 만약 staff가 아니면 403 반환
