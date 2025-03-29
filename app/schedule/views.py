@@ -442,11 +442,11 @@ class StaffCreatedScheduleListView(APIView):
     permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
-        operation_summary="스태프 일정 조회",
-        operation_description="스태프(관리자)가 생성한 일정을 조회합니다.",
+        operation_summary="사용자 일정 조회",
+        operation_description="요청한 사용자가 생성한 일정을 조회합니다.",
         responses={
             200: openapi.Response(
-                description="스태프 일정 조회 성공",
+                description="일정 조회 성공",
                 examples={
                     "application/json": [
                         {
@@ -476,7 +476,7 @@ class StaffCreatedScheduleListView(APIView):
         },
     )
     def get(self, request):
-        # Schedule 모델에서 user의 is_staff 필드가 True인 일정만 필터링
-        schedules = Schedule.objects.filter(user__is_staff=True).order_by("start_date")
+        # 요청한 사용자가 생성한 일정만 필터링
+        schedules = Schedule.objects.filter(user=request.user).order_by("start_date")
         serializer = ScheduleSerializer(schedules, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
