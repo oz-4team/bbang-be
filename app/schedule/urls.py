@@ -8,6 +8,7 @@ from app.schedule.views import (
     FavoriteSchedulesView,
     ScheduleDetailView,
     ScheduleListView,
+    StaffCreatedScheduleListView,
 )
 
 urlpatterns = [
@@ -36,4 +37,5 @@ urlpatterns = [
         ArtistGroupScheduleManageView.as_view(),
         name="artist-group-schedule-manage-detail",
     ),
+    path("staff/schedules/", StaffCreatedScheduleListView.as_view(), name="staff-schedule-list"),
 ]

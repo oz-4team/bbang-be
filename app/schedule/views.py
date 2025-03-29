@@ -112,7 +112,9 @@ class ArtistGroupScheduleListView(APIView):
         },
     )
     def get(self, request, artist_group_id):
-        schedules = Schedule.objects.filter(artist_group__id=artist_group_id).order_by("start_date")  # 아티스트 그룹 아이디로 일정 조회
+        schedules = Schedule.objects.filter(artist_group__id=artist_group_id).order_by(
+            "start_date"
+        )  # 아티스트 그룹 아이디로 일정 조회
         serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
         return Response(serializer.data, status=status.HTTP_200_OK)  # 직렬화 데이터 상태코드 반환
 
@@ -166,8 +168,8 @@ class FavoriteSchedulesView(APIView):
         user = request.user
         # Favorites를 통해 연결된 Schedule 중, start_date 기준 오름차순
         schedules = Schedule.objects.filter(favorites__user=user).order_by("start_date")
-        serializer = ScheduleSerializer(schedules, many=True, context={"request": request}) # 직렬화
-        return Response(serializer.data, status=status.HTTP_200_OK) # 반환
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})  # 직렬화
+        return Response(serializer.data, status=status.HTTP_200_OK)  # 반환
 
 
 # 아티스트 일정 관리 API (생성, 수정, 삭제)
@@ -433,3 +435,48 @@ class ArtistGroupScheduleManageView(APIView):
         Notification_likes_schedule_delete_send(schedule, schedule.title)
         schedule.delete()  # 일정 삭제
         return Response({"message": "일정이 삭제되었습니다."}, status=status.HTTP_200_OK)  # 메세지, 상태코드 반환
+
+
+# Staff가 생성한 일정 조회
+class StaffCreatedScheduleListView(APIView):
+    permission_classes = [IsAdminUser]
+
+    @swagger_auto_schema(
+        operation_summary="스태프 일정 조회",
+        operation_description="스태프(관리자)가 생성한 일정을 조회합니다.",
+        responses={
+            200: openapi.Response(
+                description="스태프 일정 조회 성공",
+                examples={
+                    "application/json": [
+                        {
+                            "id": 1,
+                            "is_active": True,
+                            "title": "일정 제목",
+                            "description": "일정 설명",
+                            "start_date": "2025-03-28T10:00:00Z",
+                            "end_date": "2025-03-28T12:00:00Z",
+                            "location": "고척스카이돔",
+                            "category": "공연",
+                            "latitude": "37.5665350",
+                            "longitude": "126.9779690",
+                            "solomember": True,
+                            "user": 1,
+                            "artist": None,
+                            "artist_id": None,
+                            "artist_group": None,
+                            "artist_group_id": None,
+                            "is_favorited": False,
+                            "image_url": "http://example.com/schedule/image.jpg",
+                        }
+                    ]
+                },
+            ),
+            500: "서버 오류",
+        },
+    )
+    def get(self, request):
+        # Schedule 모델에서 user의 is_staff 필드가 True인 일정만 필터링
+        schedules = Schedule.objects.filter(user__is_staff=True).order_by("start_date")
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
