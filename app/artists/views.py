@@ -127,9 +127,12 @@ class PaginationArtistAndGroupListView(APIView):  # 개별 아티스트와 그�
     def get(self, request):
         try:
             # 전체 개별 아티스트 조회 (아티스트 그룹이 null이거나 솔로활동을 하는 멤버)
-            artists = Artist.objects.filter(Q(artist_group__isnull=True) | Q(solomembers=True))
-            # 전체 그룹 아티스트 조회
-            artist_groups = ArtistGroup.objects.all()
+            artists = (
+                Artist.objects.filter(Q(artist_group__isnull=True) | Q(solomembers=True))
+                .annotate(like_count=Count("like_artists"))
+                .order_by("-like_count")
+            )
+            artist_groups = ArtistGroup.objects.all().annotate(like_count=Count("like_groups")).order_by("-like_count")
 
             user = request.user  # 현재 요청한 사용자 정보
             liked_artist_ids = set()
@@ -159,8 +162,8 @@ class PaginationArtistAndGroupListView(APIView):  # 개별 아티스트와 그�
             # 직렬화
             artist_serializer = ArtistSerializer(artists, many=True, context=context)
             artist_group_serializer = ArtistGroupSerializer(artist_groups, many=True, context=context)
-
             data = artist_serializer.data + artist_group_serializer.data
+            data = sorted(data, key=lambda x: x.get("like_count", 0), reverse=True)
 
             paginator = LimitPagination()
             paginated_data = paginator.paginate_queryset(data, request, view=self)
