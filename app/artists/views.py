@@ -88,7 +88,11 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
             artist_serializer = ArtistSerializer(artists, many=True, context=context)
             artist_group_serializer = ArtistGroupSerializer(artist_groups, many=True, context=context)
             data = artist_serializer.data + artist_group_serializer.data
+
+            # 좋아요 갯수(like_count)가 높은 순서대로 정렬 (없으면 0으로 간주)
+            data = sorted(data, key=lambda x: x.get("like_count", 0), reverse=True)
             return Response({"data": data}, status=status.HTTP_200_OK)
+
         except Exception as e:
             artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)
             return Response(
