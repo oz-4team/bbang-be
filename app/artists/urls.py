@@ -9,7 +9,8 @@ from app.artists.views import (
     ArtistGroupMemberCreateView,
     ArtistGroupMemberDeleteView,
     ArtistListView,
-    StaffArtistAndGroupListView, PaginationArtistAndGroupListView,
+    PaginationArtistAndGroupListView,
+    StaffArtistAndGroupListView,
 )
 
 urlpatterns = [

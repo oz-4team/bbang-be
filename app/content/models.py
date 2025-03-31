@@ -46,6 +46,7 @@ class Likes(BaseModel):
         verbose_name="아티스트",
         null=True,
         blank=True,
+        related_name="like_artists",
     )
     artist_group = models.ForeignKey(
         ArtistGroup,
@@ -54,6 +55,7 @@ class Likes(BaseModel):
         verbose_name="아티스트 그룹",
         null=True,
         blank=True,
+        related_name="like_groups",
     )
 
     class Meta:

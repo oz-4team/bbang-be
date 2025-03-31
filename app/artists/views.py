@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -16,11 +16,13 @@ from app.content.models import Likes
 
 artist_error = logging.getLogger("artist")
 
+
 class LimitPagination(LimitOffsetPagination):
     default_limit = 50
-    limit_query_param = 'limit'
-    offset_query_param = 'offset'
+    limit_query_param = "limit"
+    offset_query_param = "offset"
     max_limit = 2000
+
 
 class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티스트를 동시에 조회
     permission_classes = [AllowAny]  # 인증된 사용자만 접근가능
@@ -44,16 +46,19 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
     )
     def get(self, request):
         try:
-            artists = Artist.objects.filter(  # 전체 개별 아티스트 조회
-                Q(artist_group__isnull=True) | Q(solomembers=True)
-            )  # 아티스트 그룹이 null이거나 솔로활동을 하는 멤버만 조회
-            artist_groups = ArtistGroup.objects.all()  # 전체 그룹 아티스트 조회
+            # 전체 개별 아티스트 조회 (조건에 맞게 필터링)
+            artists = (
+                Artist.objects.filter(Q(artist_group__isnull=True) | Q(solomembers=True))
+                .annotate(like_count=Count("like_artists"))
+                .order_by("-like_count")
+            )
 
-            user = request.user  # 현재 요청한 사용자 정보
+            artist_groups = ArtistGroup.objects.all().annotate(like_count=Count("like_groups")).order_by("-like_count")
+
+            user = request.user
             liked_artist_ids = set()
             liked_group_ids = set()
 
-            # user가 인증된 상태라면 batch로 좋아요 데이터 미리 조회
             if user.is_authenticated:
                 artist_ids = [a.id for a in artists]
                 group_ids = [g.id for g in artist_groups]
@@ -66,6 +71,12 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                         "artist_group_id", flat=True
                     )
                 )
+
+            context = {
+                "request": request,
+                "liked_artist_ids": liked_artist_ids,
+                "liked_group_ids": liked_group_ids,
+            }
 
             # context에 liked IDs를 담아서 전송
             context = {
@@ -85,6 +96,7 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+
 class PaginationArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티스트를 동시에 조회
     permission_classes = [AllowAny]  # 전체 사용자 접근 가능
 
@@ -101,7 +113,7 @@ class PaginationArtistAndGroupListView(APIView):  # 개별 아티스트와 그�
                         "previous": None,
                         "results": [
                             # ArtistSerializer와 ArtistGroupSerializer로 직렬화된 데이터 예시
-                        ]
+                        ],
                     }
                 },
             ),
@@ -111,9 +123,7 @@ class PaginationArtistAndGroupListView(APIView):  # 개별 아티스트와 그�
     def get(self, request):
         try:
             # 전체 개별 아티스트 조회 (아티스트 그룹이 null이거나 솔로활동을 하는 멤버)
-            artists = Artist.objects.filter(
-                Q(artist_group__isnull=True) | Q(solomembers=True)
-            )
+            artists = Artist.objects.filter(Q(artist_group__isnull=True) | Q(solomembers=True))
             # 전체 그룹 아티스트 조회
             artist_groups = ArtistGroup.objects.all()
 
@@ -130,7 +140,9 @@ class PaginationArtistAndGroupListView(APIView):  # 개별 아티스트와 그�
                     Likes.objects.filter(user=user, artist_id__in=artist_ids).values_list("artist_id", flat=True)
                 )
                 liked_group_ids = set(
-                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list("artist_group_id", flat=True)
+                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list(
+                        "artist_group_id", flat=True
+                    )
                 )
 
             # context에 좋아요 정보 추가
@@ -155,6 +167,7 @@ class PaginationArtistAndGroupListView(APIView):  # 개별 아티스트와 그�
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
 
 class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
 

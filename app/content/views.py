@@ -39,7 +39,7 @@ class AllLikesAPIView(APIView):
                             "artist": "아티스트 이름",
                             "artist_image": "http://example.com/artist.jpg",
                             "artist_group": "그룹명",
-                            "artist_group_image": "http://example.com/group.jpg"
+                            "artist_group_image": "http://example.com/group.jpg",
                         }
                     ]
                 },
@@ -56,9 +56,13 @@ class AllLikesAPIView(APIView):
                 {
                     "like_id": like.id,  # 좋아요 고유 ID
                     "artist": like.artist.artist_name if like.artist else None,  # 아티스트 이름 (있으면)
-                    "artist_group": like.artist_group.artist_group if like.artist_group else None,  # 아티스트 그룹 이름 (있으면)
+                    "artist_group": (
+                        like.artist_group.artist_group if like.artist_group else None
+                    ),  # 아티스트 그룹 이름 (있으면)
                     "artist_image": like.artist.image_url.url if like.artist and like.artist.image_url else None,
-                    "artist_group_image": like.artist_group.image_url.url if like.artist_group and like.artist_group.image_url else None,
+                    "artist_group_image": (
+                        like.artist_group.image_url.url if like.artist_group and like.artist_group.image_url else None
+                    ),
                 }
                 for like in likes
             ]
