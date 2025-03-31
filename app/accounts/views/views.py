@@ -106,7 +106,7 @@ class VerifyEmailAPIView(APIView):
         signer = TimestampSigner()  # 토큰의 서명과 만료를 검증하기 위한 TimestampSigner 인스턴스 생성
         try:
             # 토큰의 서명을 검증하며, 최대 1시간(초단위) 동안만 유효한 것으로 체크
-            user_pk = signer.unsign(token, max_age=60)  # 토큰에서 사용자 pk 추출
+            user_pk = signer.unsign(token, max_age=3600)  # 토큰에서 사용자 pk 추출
             user = User.objects.get(pk=user_pk)  # pk로 사용자 조회해 user에 저장
             user.is_active = True  # 사용자의 이메일 인증 상태를 True로 변경 (인증 완료)
             user.save()  # 데이터베이스 저장
