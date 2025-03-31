@@ -2,6 +2,7 @@ import logging
 from decimal import ROUND_DOWN, Decimal
 
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -21,6 +22,50 @@ from app.schedule.utiles import (
 )
 
 schedule_error = logging.getLogger("schedule")
+
+
+class TodayScheduleListView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_summary="오늘의 일정 조회",
+        operation_description="현재 날짜에 해당하는 일정만 조회합니다.",
+        responses={
+            200: openapi.Response(
+                description="오늘의 일정 조회 성공",
+                examples={
+                    "application/json": [
+                        {
+                            "id": 1,
+                            "is_active": True,
+                            "title": "오늘의 일정 제목",
+                            "description": "일정 설명",
+                            "start_date": "2025-03-30T10:00:00Z",
+                            "end_date": "2025-03-30T12:00:00Z",
+                            "location": "장소",
+                            "category": "공연",
+                            "latitude": "37.5665350",
+                            "longitude": "126.9779690",
+                            "solomember": True,
+                            "user": 1,
+                            "artist": None,
+                            "artist_id": None,
+                            "artist_group": None,
+                            "artist_group_id": None,
+                            "is_favorited": False,
+                            "image_url": "http://example.com/schedule/image.jpg",
+                        }
+                    ]
+                },
+            ),
+            500: "서버 오류",
+        },
+    )
+    def get(self, request):
+        today = timezone.now().date()
+        schedules = Schedule.objects.filter(start_date__date=today).order_by("start_date")
+        serializer = ScheduleSerializer(schedules, many=True, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # 일반 유저 조회 API

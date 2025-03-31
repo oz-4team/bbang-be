@@ -9,10 +9,12 @@ from app.schedule.views import (
     ScheduleDetailView,
     ScheduleListView,
     StaffCreatedScheduleListView,
+    TodayScheduleListView,
 )
 
 urlpatterns = [
     path("schedules/", ScheduleListView.as_view(), name="schedule-list"),
+    path("schedules/today/", TodayScheduleListView.as_view(), name="today-schedule-list"),
     path("schedules/artist/<int:artist_id>/", ArtistScheduleListView.as_view(), name="artist-schedule-list"),
     path(
         "schedules/artist-group/<int:artist_group_id>/",
