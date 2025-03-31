@@ -7,6 +7,7 @@ from app.content.models import Likes
 
 class ArtistSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()  # 좋아요 여부
+    like_count = serializers.IntegerField(read_only=True)
     artist_group_id = serializers.PrimaryKeyRelatedField(
         queryset=ArtistGroup.objects.all(),
         source="artist_group",
@@ -35,6 +36,7 @@ class ArtistSerializer(serializers.ModelSerializer):
 class ArtistGroupSerializer(serializers.ModelSerializer):
     members = ArtistSerializer(many=True, read_only=True)
     is_liked = serializers.SerializerMethodField()  # 좋아요 여부
+    like_count = serializers.IntegerField(read_only=True)
     # 그룹 이미지(image_url)를 Base64 형식의 데이터를 받을 수 있도록 정의
     image_url = Base64ImageField(required=False, allow_null=True)
 
