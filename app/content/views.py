@@ -28,11 +28,21 @@ class AllLikesAPIView(APIView):
 
     @swagger_auto_schema(
         operation_summary="전체 좋아요 조회",
-        operation_description="요청한 사용자가 생성한 모든 좋아요를 조회",
+        operation_description="요청한 사용자가 생성한 모든 좋아요를 조회하며, 아티스트/아티스트 그룹의 이미지도 함께 반환합니다.",
         responses={
             200: openapi.Response(
                 description="좋아요 조회 성공",
-                examples={"application/json": [{"like_id": 1, "artist": "아티스트 이름", "artist_group": "그룹명"}]},
+                examples={
+                    "application/json": [
+                        {
+                            "like_id": 1,
+                            "artist": "아티스트 이름",
+                            "artist_image": "http://example.com/artist.jpg",
+                            "artist_group": "그룹명",
+                            "artist_group_image": "http://example.com/group.jpg"
+                        }
+                    ]
+                },
             ),
             500: "서버 오류",
         },
@@ -46,18 +56,19 @@ class AllLikesAPIView(APIView):
                 {
                     "like_id": like.id,  # 좋아요 고유 ID
                     "artist": like.artist.artist_name if like.artist else None,  # 아티스트 이름 (있으면)
-                    "artist_group": like.artist_group.artist_group if like.artist_group else None,  # 그룹명 (있으면)
+                    "artist_image": like.artist.image_url if like.artist and hasattr(like.artist, "image_url") else None,  # 아티스트 이미지 URL
+                    "artist_group": like.artist_group.artist_group if like.artist_group else None,  # 아티스트 그룹 이름 (있으면)
+                    "artist_group_image": like.artist_group.image_url if like.artist_group and hasattr(like.artist_group, "image_url") else None,  # 아티스트 그룹 이미지 URL
                 }
                 for like in likes
             ]
             return Response(response_data, status=status.HTTP_200_OK)  # 결과 반환
         except Exception as e:
-            content_error.error(f"Content API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
+            content_error.error(f"Content API 에러 발생 {e}", exc_info=True)  # 에러 로깅
             return Response(
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
 
 # 특정 좋아요 조회 (단건 조회)
 class SingleLikeAPIView(APIView):
