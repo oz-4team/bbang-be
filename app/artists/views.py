@@ -1,13 +1,14 @@
 import logging
+
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination  # 페이지네이션 import
 
 from app.artists.models import Artist, ArtistGroup
 from app.artists.serializers import ArtistGroupSerializer, ArtistSerializer
@@ -15,16 +16,76 @@ from app.content.models import Likes
 
 artist_error = logging.getLogger("artist")
 
-
-# 페이지네이션
 class LimitPagination(LimitOffsetPagination):
     default_limit = 50
     limit_query_param = 'limit'
     offset_query_param = 'offset'
     max_limit = 2000
 
-
 class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티스트를 동시에 조회
+    permission_classes = [AllowAny]  # 인증된 사용자만 접근가능
+
+    @swagger_auto_schema(
+        operation_summary="개별 아티스트 및 그룹 아티스트 조회",
+        operation_description="전체 개별 아티스트와 그룹 아티스트를 조회하고, 인증된 사용자의 경우 좋아요 여부를 포함하여 반환",
+        responses={
+            200: openapi.Response(
+                description="조회 성공",
+                examples={
+                    "application/json": {
+                        "data": [
+                            # ArtistSerializer와 ArtistGroupSerializer로 직렬화된 데이터 예시
+                        ]
+                    }
+                },
+            ),
+            500: "서버 오류",
+        },
+    )
+    def get(self, request):
+        try:
+            artists = Artist.objects.filter(  # 전체 개별 아티스트 조회
+                Q(artist_group__isnull=True) | Q(solomembers=True)
+            )  # 아티스트 그룹이 null이거나 솔로활동을 하는 멤버만 조회
+            artist_groups = ArtistGroup.objects.all()  # 전체 그룹 아티스트 조회
+
+            user = request.user  # 현재 요청한 사용자 정보
+            liked_artist_ids = set()
+            liked_group_ids = set()
+
+            # user가 인증된 상태라면 batch로 좋아요 데이터 미리 조회
+            if user.is_authenticated:
+                artist_ids = [a.id for a in artists]
+                group_ids = [g.id for g in artist_groups]
+
+                liked_artist_ids = set(
+                    Likes.objects.filter(user=user, artist_id__in=artist_ids).values_list("artist_id", flat=True)
+                )
+                liked_group_ids = set(
+                    Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list(
+                        "artist_group_id", flat=True
+                    )
+                )
+
+            # context에 liked IDs를 담아서 전송
+            context = {
+                "request": request,
+                "liked_artist_ids": liked_artist_ids,
+                "liked_group_ids": liked_group_ids,
+            }
+
+            artist_serializer = ArtistSerializer(artists, many=True, context=context)
+            artist_group_serializer = ArtistGroupSerializer(artist_groups, many=True, context=context)
+            data = artist_serializer.data + artist_group_serializer.data
+            return Response({"data": data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            artist_error.error(f"Artist API 에러 발생 {e}", exc_info=True)
+            return Response(
+                {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+class PaginationArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티스트를 동시에 조회
     permission_classes = [AllowAny]  # 전체 사용자 접근 가능
 
     @swagger_auto_schema(
@@ -72,6 +133,7 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                     Likes.objects.filter(user=user, artist_group_id__in=group_ids).values_list("artist_group_id", flat=True)
                 )
 
+            # context에 좋아요 정보 추가
             context = {
                 "request": request,
                 "liked_artist_ids": liked_artist_ids,
@@ -81,10 +143,9 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
             # 직렬화
             artist_serializer = ArtistSerializer(artists, many=True, context=context)
             artist_group_serializer = ArtistGroupSerializer(artist_groups, many=True, context=context)
-            # 두 결과를 합침
+
             data = artist_serializer.data + artist_group_serializer.data
 
-            # 페이지네이터 인스턴스 생성 및 페이지네이션 적용
             paginator = LimitPagination()
             paginated_data = paginator.paginate_queryset(data, request, view=self)
             return paginator.get_paginated_response(paginated_data)
@@ -94,7 +155,6 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                 {"message": "오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
 
 class ArtistListView(APIView):  # 개별 아티스트 전체조회 및 생성
 

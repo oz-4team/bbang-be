@@ -9,11 +9,12 @@ from app.artists.views import (
     ArtistGroupMemberCreateView,
     ArtistGroupMemberDeleteView,
     ArtistListView,
-    StaffArtistAndGroupListView,
+    StaffArtistAndGroupListView, PaginationArtistAndGroupListView,
 )
 
 urlpatterns = [
     path("artists-and-groups/", ArtistAndGroupListView.as_view(), name="artist-and-group-list"),
+    path("allartists/", PaginationArtistAndGroupListView.as_view(), name="allartists"),
     path("artists/", ArtistListView.as_view(), name="artist-list"),
     path("artists/<int:artist_id>/", ArtistDetailView.as_view(), name="artist-detail"),
     path("artist-groups/", ArtistGroupListView.as_view(), name="artist-group-list"),
