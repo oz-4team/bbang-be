@@ -624,9 +624,9 @@ class ArtistGroupDetailView(APIView):
     def get(self, request, artist_group_id):
         try:
             artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)
-            from app.artists.serializers import ArtistGroupDetailSerializer
-
-            serializer = ArtistGroupDetailSerializer(artist_group, context={"request": request})
+            #from app.artists.serializers import ArtistGroupDetailSerializer
+            #detail 제거
+            serializer = ArtistGroupSerializer(artist_group, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:
