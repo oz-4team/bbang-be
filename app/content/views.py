@@ -37,8 +37,10 @@ class AllLikesAPIView(APIView):
                         {
                             "like_id": 1,
                             "artist": "아티스트 이름",
+                            "artist_id": 1,
                             "artist_image": "http://example.com/artist.jpg",
                             "artist_group": "그룹명",
+                            "artist_group_id": 1,
                             "artist_group_image": "http://example.com/group.jpg",
                         }
                     ]
