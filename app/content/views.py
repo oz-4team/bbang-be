@@ -56,9 +56,11 @@ class AllLikesAPIView(APIView):
                 {
                     "like_id": like.id,  # 좋아요 고유 ID
                     "artist": like.artist.artist_name if like.artist else None,  # 아티스트 이름 (있으면)
+                    "artist_id" : like.artist.id if like.artist else None,  # 아티스트 ID (있으면)
                     "artist_group": (
                         like.artist_group.artist_group if like.artist_group else None
                     ),  # 아티스트 그룹 이름 (있으면)
+                    "artist_group_id": like.artist_group.id if like.artist_group else None, #아티스트 그룹ID (있으면)
                     "artist_image": like.artist.image_url.url if like.artist and like.artist.image_url else None,
                     "artist_group_image": (
                         like.artist_group.image_url.url if like.artist_group and like.artist_group.image_url else None
