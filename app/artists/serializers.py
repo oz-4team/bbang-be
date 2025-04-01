@@ -58,16 +58,7 @@ class ArtistGroupDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ArtistGroup
-        fields = (
-            "id",
-            "artist_group",
-            "artist_agency",
-            "group_insta",
-            "group_fandom",
-            "debut_date",
-            "image_url",
-            "members",
-        )
+        fields = "__all__"
 
     def get_is_liked(self, obj):
         """현재 user가 이 아티스트그룹을 좋아요했는지 여부"""
