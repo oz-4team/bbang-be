@@ -46,13 +46,13 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
     )
     def get(self, request):
         try:
-            # 전체 개별 아티스트 조회 (조건에 맞게 필터링)
+            # 솔로 아티스트: artist_group is null 또는 solomembers가 True인 경우
             artists = (
                 Artist.objects.filter(Q(artist_group__isnull=True) | Q(solomembers=True))
                 .annotate(like_count=Count("like_artists"))
                 .order_by("-like_count")
             )
-
+            # 그룹 아티스트 전체 조회
             artist_groups = ArtistGroup.objects.all().annotate(like_count=Count("like_groups")).order_by("-like_count")
 
             user = request.user
@@ -78,18 +78,10 @@ class ArtistAndGroupListView(APIView):  # 개별 아티스트와 그룹 아티�
                 "liked_group_ids": liked_group_ids,
             }
 
-            # context에 liked IDs를 담아서 전송
-            context = {
-                "request": request,
-                "liked_artist_ids": liked_artist_ids,
-                "liked_group_ids": liked_group_ids,
-            }
-
+            # 직렬화 시 context에 좋아요 정보도 전달
             artist_serializer = ArtistSerializer(artists, many=True, context=context)
             artist_group_serializer = ArtistGroupSerializer(artist_groups, many=True, context=context)
             data = artist_serializer.data + artist_group_serializer.data
-
-            # 좋아요 갯수(like_count)가 높은 순서대로 정렬 (없으면 0으로 간주)
             data = sorted(data, key=lambda x: x.get("like_count", 0), reverse=True)
             return Response({"data": data}, status=status.HTTP_200_OK)
 
@@ -624,8 +616,8 @@ class ArtistGroupDetailView(APIView):
     def get(self, request, artist_group_id):
         try:
             artist_group = get_object_or_404(ArtistGroup, id=artist_group_id)
-            #from app.artists.serializers import ArtistGroupDetailSerializer
-            #detail 제거
+            # from app.artists.serializers import ArtistGroupDetailSerializer
+            # detail 제거
             serializer = ArtistGroupSerializer(artist_group, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
 
