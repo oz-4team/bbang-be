@@ -574,16 +574,19 @@ class ArtistGroupMemberDeleteView(APIView):
         },
     )
     def delete(self, request, group_id, artist_id):
+        # 그룹과 아티스트 객체 조회
         artist_group = get_object_or_404(ArtistGroup, id=group_id)
         artist = get_object_or_404(Artist, id=artist_id)
 
+        # 아티스트가 해당 그룹에 소속되어 있는지 확인
         if artist.artist_group and artist.artist_group.id == artist_group.id:
-            artist.artist_group = None  # 소속 해제
-            artist.save()
-            return Response({"message": "멤버가 그룹에서 삭제되었습니다."}, status=status.HTTP_200_OK)
+            # 소속 해제 대신 아티스트 객체 자체를 삭제
+            artist.delete()
+            return Response({"message": "해당 아티스트가 삭제되었습니다."}, status=status.HTTP_200_OK)
         else:
             return Response(
-                {"error": "해당 아티스트는 이 그룹에 속해 있지 않습니다."}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "해당 아티스트는 이 그룹에 속해 있지 않습니다."},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
 
