@@ -302,6 +302,10 @@ class UserProfileAPIView(APIView):
         try:
             user = self.get_object()  # get_object 가져오기
             serializer = ProfileSerializer(user)  # 사용자 객체를 직렬화 -> JSON 형식으로 변환
+            if not user.password:
+                return Response(
+                    {"massage": "소셜 회원은 프로필 수정이 불가능합니다."}, status=status.HTTP_400_BAD_REQUEST,
+                )
             return Response(serializer.data, status=status.HTTP_200_OK)  # 변환된 값과 상태코드 출력
 
         except Exception as e:
@@ -420,6 +424,10 @@ class RequestPasswordResetAPIView(APIView):
                 user = User.objects.get(
                     email=email.strip()
                 )  # 해당 이메일을 가진 사용자 조회 strip()을 사용해 앞뒤 공백 삭제
+                if not user.password:
+                    return Response(
+                        {"massage": "소셜 회원은 프로필 수정이 불가능합니다."}, status=status.HTTP_400_BAD_REQUEST,
+                    )
             except User.DoesNotExist:
                 return Response(
                     {"error": "해당 이메일을 가진 사용자가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND
