@@ -429,7 +429,8 @@ class RequestPasswordResetAPIView(APIView):
                 )  # 해당 이메일을 가진 사용자 조회 strip()을 사용해 앞뒤 공백 삭제
                 if not user.password:
                     return Response(
-                        {"message": "소셜 회원은 비밀번호 재설정이 불가능합니다."}, status=status.HTTP_400_BAD_REQUEST,
+                        {"message": "소셜 회원은 비밀번호 재설정이 불가능합니다."},
+                        status=status.HTTP_400_BAD_REQUEST,
                     )
             except User.DoesNotExist:
                 return Response(
