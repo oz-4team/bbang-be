@@ -271,11 +271,6 @@ class UserProfileAPIView(APIView):
 
     def get_object(self):
         try:
-            user = self.request.user
-            if not user.password:
-                return Response(
-                    {"massage": "소셜 회원은 프로필 수정이 불가능합니다."}, status=status.HTTP_400_BAD_REQUEST,
-                )
             return self.request.user  # 사용자 객체를 가져오기
         except Exception as e:
             account_error.error(f"Account API 에러 발생 {e}", exc_info=True)  # Error exc_info 예외발생위치 저장
@@ -300,12 +295,18 @@ class UserProfileAPIView(APIView):
                     }
                 },
             ),
+            400: "잘못된 요청",
             500: "서버 오류",
         },
     )
     def get(self, request, *args, **kwargs):  # GET
         try:
             user = self.get_object()  # get_object 가져오기
+            if not user.password:  # 비밀번호가 없는 경우 (소셜 로그인 계정)
+                return Response(
+                    {"message": "소셜 회원은 프로필 수정이 불가능합니다."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             serializer = ProfileSerializer(user)  # 사용자 객체를 직렬화 -> JSON 형식으로 변환
             return Response(serializer.data, status=status.HTTP_200_OK)  # 변환된 값과 상태코드 출력
 
