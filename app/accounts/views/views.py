@@ -302,7 +302,8 @@ class UserProfileAPIView(APIView):
     def get(self, request, *args, **kwargs):  # GET
         try:
             user = self.get_object()  # get_object 가져오기
-            if not user.password:  # 비밀번호가 없는 경우 (소셜 로그인 계정)
+
+            if not user.has_usable_password():  # 비밀번호가 없는 경우 (소셜 로그인 계정)
                 return Response(
                     {"message": "소셜 회원은 프로필 수정이 불가능합니다."},
                     status=status.HTTP_400_BAD_REQUEST,
